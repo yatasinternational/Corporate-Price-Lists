@@ -3,20 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yataş Group - Corporate Price Lists</title>
+    <title>Yataş Group - Corporate Prıce Lısts</title>
     
     <!-- PDF.js Çekirdek Kütüphanesi -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-    
-    <!-- KRİTİK EKLEME: Linklerin kaymaması ve tam yerine oturması için PDF.js Orijinal CSS Katmanı -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf_viewer.min.css">
 
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
         body {
-            background: url('image_26c6be.jpg') no-repeat center center fixed;
-            background-size: cover;
+            background: #111b31;
             display: flex;
             height: 100vh;
             font-family: 'Segoe UI', Arial, sans-serif;
@@ -37,7 +33,7 @@
             overflow: hidden;
         }
 
-        /* SOL PANEL: YATAŞ KURUMSAL BANNER */
+        /* SOL PANEL */
         .sidebar-nav {
             width: 320px;
             background: #002870; /* Yataş Kurumsal Lacivert */
@@ -49,9 +45,6 @@
             z-index: 200;
             overflow-y: auto;
         }
-
-        .sidebar-nav::-webkit-scrollbar { width: 4px; }
-        .sidebar-nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); }
 
         .logo-container {
             width: 100%;
@@ -93,8 +86,6 @@
             margin-bottom: 10px;
             padding-left: 5px;
             border-left: 3px solid #ffffff;
-            padding-top: 2px;
-            padding-bottom: 2px;
         }
 
         .deck-list {
@@ -132,15 +123,6 @@
             border-color: #ffffff;
             color: #002870; 
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-        }
-
-        .deck-btn::before {
-            content: "•";
-            color: #fff;
-            font-size: 16px;
-        }
-        .deck-btn.active-deck::before {
-            color: #002870;
         }
 
         /* WORKSPACE */
@@ -208,56 +190,17 @@
             display: block;
             box-shadow: 0 25px 65px rgba(0,0,0,0.8);
             border-radius: 6px;
-            z-index: 1;
         }
 
-        /* --- SÜPER ENTEGRE LİNK KATMANI STYLES --- */
+        /* AKILLI TEXT-LINK KATMANI */
         .annotationLayer {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
             opacity: 1;
-            pointer-events: auto; /* Tıklamayı serbest bırakır */
-            z-index: 2; /* Canvas'ın tam üstünde yer alır */
-            transform-origin: top left;
-        }
-        /* Link kutularını tamamen şeffaf yapma ve hover efekti */
-        .annotationLayer .linkAnnotation > a {
-            background-color: rgba(255, 255, 255, 0) !important;
-            transition: background-color 0.15s ease;
-        }
-        .annotationLayer .linkAnnotation > a:hover {
-            background-color: rgba(0, 40, 112, 0.15) !important;
+            pointer-events: auto; /* Tıklamayı etkinleştirir */
+            z-index: 999;
         }
 
-        /* PREMIUM GEÇİŞ OKLARI */
-        .nav-overlay-zone {
-            position: absolute;
-            top: 0; height: 100%; width: 100px;
-            z-index: 9999 !important;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .nav-overlay-zone.left-zone { left: 0; }
-        .nav-overlay-zone.right-zone { right: 0; }
-
-        .arrow-btn {
-            width: 50px; height: 50px;
-            background: rgba(0, 0, 0, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            color: #fff; font-size: 20px; cursor: pointer;
-            opacity: 0.35; transition: all 0.25s ease-in-out;
-            backdrop-filter: blur(5px);
-            user-select: none;
-        }
-        .nav-overlay-zone:hover { cursor: pointer; }
-        .nav-overlay-zone:hover .arrow-btn { opacity: 0.75; background: rgba(0, 0, 0, 0.7); }
-        .arrow-btn:hover {
-            opacity: 1 !important; transform: scale(1.1);
-            background: #ffffff !important; color: #000000 !important;
-            box-shadow: 0 0 20px rgba(255,255,255,0.6);
-        }
-        
         /* SAĞ PANEL: SLAYT ŞERİDİ */
         .sidebar-thumbnails {
             width: 200px;
@@ -292,6 +235,33 @@
             background: rgba(0,0,0,0.8); color: #fff; font-size: 10px;
             font-weight: bold; padding: 1px 5px; border-radius: 3px;
         }
+
+        /* PREMIUM GEÇİŞ OKLARI */
+        .nav-overlay-zone {
+            position: absolute;
+            top: 0; height: 100%; width: 100px;
+            z-index: 900;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .nav-overlay-zone.left-zone { left: 0; }
+        .nav-overlay-zone.right-zone { right: 0; }
+
+        .arrow-btn {
+            width: 50px; height: 50px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; font-size: 20px; cursor: pointer;
+            opacity: 0.35; transition: all 0.25s ease-in-out;
+            backdrop-filter: blur(5px);
+            user-select: none;
+        }
+        .nav-overlay-zone:hover .arrow-btn { opacity: 0.75; }
+        .arrow-btn:hover {
+            opacity: 1 !important; transform: scale(1.1);
+            background: #ffffff !important; color: #000000 !important;
+        }
         
         /* ALT PANEL */
         .bottom-bar-area {
@@ -304,7 +274,6 @@
             display: flex; align-items: center; gap: 15px; 
             background: rgba(0, 40, 112, 0.85); padding: 10px 25px; border-radius: 50px;
             backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.15);
-            box-shadow: 0 10px 35px rgba(0,0,0,0.6);
         }
         
         .bottom-bar-area button {
@@ -322,13 +291,7 @@
             color: #fff; text-align: center; font-weight: bold;
         }
         #pageIndicator { color: #ffffff; }
-        
-        .hint { 
-            font-size: 12px; 
-            color: #ffffff !important; 
-            font-weight: 500;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.8); 
-        }
+        .hint { font-size: 12px; color: #ccc; }
     </style>
 </head>
 <body>
@@ -337,19 +300,18 @@
     
     <div class="portal-wrapper">
         
-        <!-- SOL BANNER -->
+        <!-- SOL MENU -->
         <div class="sidebar-nav">
             <div class="logo-container">
-                <img src="image_26c641.png" alt="Yataş Grup Logo">
+                <!-- Şirket logosu buraya gelecek -->
+                <div style="color:#002870; font-weight:bold; font-size:24px;">YATAŞ GROUP</div>
             </div>
             <div class="brand-subtitle">Corporate Price Lists</div>
             
-            <!-- 1. ANA BAŞLIK: CATALOGUES -->
             <div class="menu-section-title">Catalogues</div>
             <ul class="deck-list" id="cataloguesList"></ul>
 
-            <!-- 2. ANA BAŞLIK: Download Links -->
-            <div class="menu-section-title">Download Lınks</div>
+            <div class="menu-section-title">Download Links</div>
             <ul class="deck-list" id="downloadlinks"></ul>
         </div>
 
@@ -387,7 +349,7 @@
                     <button id="zoomInBtn">🔍 +</button>
                     <button id="zoomOutBtn">🔍 -</button>
                 </div>
-                <div class="hint">Use your mouse wheel to zoom in/out on the slide area.</div>
+                <div class="hint">Use your mouse wheel to zoom or click links directly.</div>
             </div>
         </div>
 
@@ -396,25 +358,14 @@
     <script>
         const presentationData = {
             catalogues: [
-                { title: "Yataş Bedding July 2026 USD", url: "BEDDING_JULY2026_DOLAR_HIGH.pdf" },
-                { title: "Yataş Bedding July 2026 EUR", url: "BEDDING_JULY2026_EURO_HIGH.pdf" },
+                { title: "Yataş Bedding Export Price List", url: "Yatas Bedding Export Price List.pdf" }
             ],
-            downloadlinks: [
-                { title: "Yataş Bedding Export Price List", url: "Yataş Bedding Export Price List.pdf" }
-            ]
+            downloadlinks: []
         };
 
         const presentations = [...presentationData.catalogues, ...presentationData.downloadlinks];
-
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
-
-        let currentId = 0; 
-        let pages = [];
-        let thumbElements = [];
-        let pdfDoc = null;
-        
-        let scale = 1; let posX = 0; let posY = 0;
-        let isDragging = false; let startX; let startY;
+        let currentId = 0; let pages = []; let thumbElements = []; let pdfDoc = null;
+        let scale = 1; let posX = 0; let posY = 0; let isDragging = false; let startX; let startY;
 
         const zoomContainer = document.getElementById('zoomContainer');
         const book = document.getElementById('book');
@@ -427,91 +378,57 @@
 
         function buildSidebarMenu() {
             cataloguesList.innerHTML = "";
-            downloadlinks.innerHTML = "";
-
             let globalIdx = 0;
-
             presentationData.catalogues.forEach((deck) => {
                 const currentIdx = globalIdx;
                 const li = document.createElement('li');
                 const btn = document.createElement('button');
                 btn.className = `deck-btn ${currentIdx === 0 ? 'active-deck' : ''}`;
                 btn.innerText = deck.title;
-                btn.setAttribute('data-index', currentIdx);
                 btn.addEventListener('click', () => switchPresentation(currentIdx));
                 li.appendChild(btn);
                 cataloguesList.appendChild(li);
                 globalIdx++;
             });
-
-            presentationData.downloadlinks.forEach((deck) => {
-                const currentIdx = globalIdx;
-                const li = document.createElement('li');
-                const btn = document.createElement('button');
-                btn.className = `deck-btn`;
-                btn.innerText = deck.title;
-                btn.setAttribute('data-index', currentIdx);
-                btn.addEventListener('click', () => switchPresentation(currentIdx));
-                li.appendChild(btn);
-                downloadlinks.appendChild(li);
-                globalIdx++;
-            });
         }
 
         async function switchPresentation(index) {
-            const buttons = document.querySelectorAll('.deck-btn');
-            buttons.forEach(b => {
-                const bIdx = parseInt(b.getAttribute('data-index'));
-                b.classList.toggle('active-deck', bIdx === index);
-            });
-
             globalLoading.style.display = 'flex';
-            globalLoading.innerText = `Loading "${presentations[index].title}"...`;
-
-            book.innerHTML = '';
-            sidebarThumbnails.innerHTML = '';
-            pages = [];
-            thumbElements = [];
-            currentId = 0;
-            resetZoom();
-
+            book.innerHTML = ''; sidebarThumbnails.innerHTML = '';
+            pages = []; thumbElements = []; currentId = 0; resetZoom();
             await loadPDF(presentations[index].url);
         }
 
         function resizeBookToFit(viewport) {
-            const sceneW = scene.clientWidth;
-            const sceneH = scene.clientHeight;
+            const sceneW = scene.clientWidth; const sceneH = scene.clientHeight;
             const scaleX = (sceneW * 0.94) / viewport.width;
             const scaleY = (sceneH * 0.90) / viewport.height;
             const idealScale = Math.min(scaleX, scaleY);
             
-            const finalW = Math.floor(viewport.width * idealScale);
-            const finalH = Math.floor(viewport.height * idealScale);
-            
-            book.style.width = finalW + 'px';
-            book.style.height = finalH + 'px';
+            book.style.width = Math.floor(viewport.width * idealScale) + 'px';
+            book.style.height = Math.floor(viewport.height * idealScale) + 'px';
 
-            // Sayfa bazında link katmanlarını da milimetrik ölçeklendiriyoruz
             const activePageDiv = pages[currentId];
             if (activePageDiv) {
                 const layer = activePageDiv.querySelector('.annotationLayer');
                 if (layer) {
-                    // Render 2.0 ölçekte yapıldığı için, CSS kutu boyutuna (idealScale / 2.0) oranında küçültüyoruz
+                    // Render ölçeği 2.0 olduğu için yazıları kutuya oranlıyoruz
                     layer.style.transform = `scale(${idealScale / 2.0})`;
+                    layer.style.width = viewport.width + 'px';
+                    layer.style.height = viewport.height + 'px';
                 }
             }
         }
 
-        // TAM ENTEGRE LİNK DESTEKLİ RENDERPAGE FONKSİYONU
-        async function renderPage(pageNum, totalPages) {
+        // AKILLI LINK OKUYUCU ENTEGRELİ RENDER FONKSİYONU
+        async function renderPage(pageNum) {
             try {
                 const page = await pdfDoc.getPage(pageNum);
-                // Hassas netlik için çizim kalitesini yüksek (2.0) tutuyoruz
-                const viewport = page.getViewport({ scale: 2.0 });
+                const viewport = page.getViewport({ scale: 2.0 }); // Netlik için 2.0
 
                 const pageDiv = document.createElement('div');
                 pageDiv.className = 'page';
-                pageDiv.style.position = 'relative'; 
+                pageDiv.style.position = 'relative';
                 
                 const canvas = document.createElement('canvas');
                 const context = canvas.getContext('2d');
@@ -520,35 +437,53 @@
                 pageDiv.appendChild(canvas);
                 book.appendChild(pageDiv);
 
-                const renderTask = page.render({ canvasContext: context, viewport: viewport });
-                pageDiv.pdfViewport = page.getViewport({ scale: 1.0 }); 
                 pages[pageNum - 1] = pageDiv;
+                pageDiv.pdfViewport = page.getViewport({ scale: 1.0 });
 
-                await renderTask.promise;
+                await page.render({ canvasContext: context, viewport: viewport }).promise;
 
-                // PDF içerisindeki link verilerini çekip canvas üstüne bindirme alanı
-                const annotations = await page.getAnnotations();
-                if (annotations.length > 0) {
-                    const annotationLayerDiv = document.createElement('div');
-                    annotationLayerDiv.className = 'annotationLayer';
-                    
-                    pdfjsLib.AnnotationLayer.render({
-                        viewport: viewport,
-                        div: annotationLayerDiv,
-                        annotations: annotations,
-                        page: page,
-                        linkService: {
-                            navigateTo: (dest) => console.log("İç Link:", dest),
-                            getDestinationHash: (dest) => "#",
-                            getAnchorUrl: (hash) => "#",
-                            setHash: (hash) => {},
-                            executeNamedAction: (action) => {}
-                        },
-                        downloadManager: null
-                    });
-                    
+                // --- HACKER METİN TARAMA VE LİNK JENERATÖRÜ ---
+                const textContent = await page.getTextContent();
+                const annotationLayerDiv = document.createElement('div');
+                annotationLayerDiv.className = 'annotationLayer';
+                annotationLayerDiv.style.position = 'absolute';
+                annotationLayerDiv.style.top = '0'; annotationLayerDiv.style.left = '0';
+                annotationLayerDiv.style.transformOrigin = 'top left';
+
+                textContent.items.forEach(item => {
+                    // Satırda link formatı tarama
+                    if (item.str.includes("http") || item.str.includes("we.tl")) {
+                        const urlMatch = item.str.match(/(https?:\/\/[^\s]+)/);
+                        if (urlMatch) {
+                            const actualUrl = urlMatch[0];
+                            const tx = pdfjsLib.Util.transform(viewport.transform, item.transform);
+                            
+                            const linkAnchor = document.createElement('a');
+                            linkAnchor.href = actualUrl;
+                            linkAnchor.target = '_blank';
+                            linkAnchor.style.position = 'absolute';
+                            
+                            // Milimetrik yerleşim hesaplamaları
+                            linkAnchor.style.left = `${tx[4]}px`;
+                            linkAnchor.style.top = `${tx[5] - (item.height * 1.8)}px`; 
+                            linkAnchor.style.width = `${item.width * 2.0}px`;
+                            linkAnchor.style.height = `${item.height * 2.2}px`;
+                            linkAnchor.style.display = 'block';
+                            linkAnchor.style.cursor = 'pointer';
+                            
+                            // Hover görsel geri bildirimi
+                            linkAnchor.addEventListener('mouseenter', () => linkAnchor.style.backgroundColor = 'rgba(0, 40, 112, 0.25)');
+                            linkAnchor.addEventListener('mouseleave', () => linkAnchor.style.backgroundColor = 'transparent');
+
+                            annotationLayerDiv.appendChild(linkAnchor);
+                        }
+                    }
+                });
+
+                if (annotationLayerDiv.children.length > 0) {
                     pageDiv.appendChild(annotationLayerDiv);
                 }
+                // ----------------------------------------------
 
                 updateBookDisplay();
             } catch (err) { console.error(err); }
@@ -557,8 +492,7 @@
         async function renderThumbnail(pageNum) {
             try {
                 const page = await pdfDoc.getPage(pageNum);
-                const viewport = page.getViewport({ scale: 0.35 }); 
-
+                const viewport = page.getViewport({ scale: 0.35 });
                 const thumbBox = document.createElement('div');
                 thumbBox.className = 'thumb-box';
                 
@@ -574,12 +508,7 @@
                 sidebarThumbnails.appendChild(thumbBox);
                 thumbElements[pageNum - 1] = thumbBox;
 
-                thumbBox.addEventListener('click', () => {
-                    currentId = pageNum - 1;
-                    resetZoom();
-                    updateBookDisplay();
-                });
-
+                thumbBox.addEventListener('click', () => { currentId = pageNum - 1; resetZoom(); updateBookDisplay(); });
                 await page.render({ canvasContext: context, viewport: viewport }).promise;
             } catch (err) { console.error(err); }
         }
@@ -591,9 +520,8 @@
                 pages = new Array(totalPages);
                 thumbElements = new Array(totalPages);
 
-                const firstBatch = Math.min(3, totalPages);
-                for (let pageNum = 1; pageNum <= firstBatch; pageNum++) {
-                    await renderPage(pageNum, totalPages);
+                for (let pageNum = 1; pageNum <= Math.min(3, totalPages); pageNum++) {
+                    await renderPage(pageNum);
                 }
 
                 globalLoading.style.display = 'none';
@@ -606,17 +534,16 @@
                             thumbElements[currentId].classList.add('active-thumb');
                         }
                     });
-                    if (pageNum > 3) { renderPage(pageNum, totalPages); }
+                    if (pageNum > 3) { renderPage(pageNum); }
                 }
             } catch (error) {
-                globalLoading.innerText = "Error loading PDF file. Please check file paths.";
+                globalLoading.innerText = "PDF dosyası yüklenemedi. Dosya adını kontrol edin.";
                 console.error(error);
             }
         }
 
         function updateBookDisplay() {
-            const total = pages.length;
-            if (total === 0) return;
+            const total = pages.length; if (total === 0) return;
 
             pages.forEach((page, index) => {
                 if (!page) return;
@@ -640,32 +567,22 @@
             document.getElementById('pageIndicator').innerText = `/ ${total}`;
         }
 
-        function flipNext() { if (currentId < pages.length - 1 && pages[currentId + 1]) { currentId++; resetZoom(); updateBookDisplay(); } }
-        function flipPrev() { if (currentId > 0 && pages[currentId - 1]) { currentId--; resetZoom(); updateBookDisplay(); } }
+        function flipNext() { if (currentId < pages.length - 1) { currentId++; resetZoom(); updateBookDisplay(); } }
+        function flipPrev() { if (currentId > 0) { currentId--; resetZoom(); updateBookDisplay(); } }
         function resetZoom() { scale = 1; posX = 0; posY = 0; updateTransform(); }
         function updateTransform() { zoomContainer.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`; }
 
-        document.getElementById('zoneLeft').addEventListener('click', (e) => { if (scale > 1) return; e.stopPropagation(); flipPrev(); });
-        document.getElementById('zoneRight').addEventListener('click', (e) => { if (scale > 1) return; e.stopPropagation(); flipNext(); });
-
-        gotoInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                let targetPage = parseInt(gotoInput.value);
-                if (!isNaN(targetPage) && targetPage >= 1 && targetPage <= pages.length) {
-                    currentId = targetPage - 1; resetZoom(); updateBookDisplay(); gotoInput.blur();
-                } else { gotoInput.value = currentId + 1; }
-            }
-        });
+        document.getElementById('zoneLeft').addEventListener('click', (e) => { if (scale > 1) return; flipPrev(); });
+        document.getElementById('zoneRight').addEventListener('click', (e) => { if (scale > 1) return; flipNext(); });
 
         scene.addEventListener('wheel', (e) => {
             e.preventDefault();
             if (e.deltaY < 0) { scale = Math.min(scale + 0.2, 5); } else { scale = Math.max(scale - 0.2, 1); }
-            if (scale === 1) { posX = 0; posY = 0; }
-            updateTransform();
+            if (scale === 1) { posX = 0; posY = 0; } updateTransform();
         });
 
         scene.addEventListener('mousedown', (e) => {
-            if (scale === 1 || e.target.closest('.nav-overlay-zone')) return;
+            if (scale === 1 || e.target.closest('.nav-overlay-zone') || e.target.tagName === 'A') return;
             isDragging = true; startX = e.clientX - posX; startY = e.clientY - posY;
         });
 
@@ -676,12 +593,6 @@
         document.getElementById('zoomOutBtn').addEventListener('click', () => { scale = Math.max(scale - 0.5, 1); if(scale===1){posX=0;posY=0;} updateTransform(); });
         document.getElementById('nextBtn').addEventListener('click', flipNext);
         document.getElementById('prevBtn').addEventListener('click', flipPrev);
-
-        window.addEventListener('keydown', (e) => {
-            if (e.target.tagName === 'INPUT') return; 
-            if (e.key === "ArrowRight" || e.key === " ") flipNext();
-            if (e.key === "ArrowLeft") flipPrev();
-        });
 
         window.addEventListener('resize', () => { if (pages[currentId]) updateBookDisplay(); });
 
