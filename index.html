@@ -327,9 +327,9 @@
             <div class="menu-section-title">Catalogues</div>
             <ul class="deck-list" id="cataloguesList"></ul>
 
-            <!-- 2. ANA BAŞLIK: OTHER PRESENTATIONS -->
-            <div class="menu-section-title">Other Presentatıons</div>
-            <ul class="deck-list" id="otherList"></ul>
+            <!-- 2. ANA BAŞLIK: DOWNLOAD LINKS -->
+            <div class="menu-section-title">Download Links</div>
+            <ul class="deck-list" id="downloadList"></ul>
         </div>
 
         <!-- WORKSPACE -->
@@ -373,21 +373,20 @@
     </div>
 
     <script>
-        // İNCELEMEN İÇİN ÖZELLİKLE AYIRDIĞIM YENİ VERİ YAPISI
         // Dosya isimlerini (url kısımlarını) klasöründekilerle birebir eşleyebilirsin abi.
         const presentationData = {
             catalogues: [
                 { title: "Yataş Bedding July 2026 USD", url: "BEDDING_JULY2026_DOLAR_HIGH.pdf" },
                 { title: "Yataş Bedding JUly 2026 EUR", url: "BEDDING_JULY2026_EURO_HIGH.pdf" }
             ],
-            otherPresentations: [
-                { title: "Yataş Bedding July 2026 USD HQ", url: "https://we.tl/t-hHbsYtkAQv63LRYm" isLink: true },
-                { title: "Yataş Bedding JUly 2026 EUR HQ", url: "https://we.tl/t-xABOnqmf2pMj3dhK" isLink: true }
+            downloadLinks: [
+                { title: "Yataş Bedding July 2026 USD HQ", url: "https://we.tl/t-hHbsYtkAQv63LRYm", isLink: true },
+                { title: "Yataş Bedding JUly 2026 EUR HQ", url: "https://we.tl/t-xABOnqmf2pMj3dhK", isLink: true }
             ]
         };
 
         // Arka planda aktif sunumu yönetmek için düz listeye çeviriyoruz
-        const presentations = [...presentationData.catalogues, ...presentationData.otherPresentations];
+        const presentations = [...presentationData.catalogues, ...presentationData.downloadLinks];
 
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
@@ -405,13 +404,13 @@
         const sidebarThumbnails = document.getElementById('sidebarThumbnails');
         const gotoInput = document.getElementById('gotoInput');
         const cataloguesList = document.getElementById('cataloguesList');
-        const otherList = document.getElementById('otherList');
+        const downloadList = document.getElementById('downloadList');
         const globalLoading = document.getElementById('globalLoading');
 
-        // BEYNİ BURASI: Sol taraftaki listeleri iki ayrı gruba dinamik olarak basan fonksiyon
+        // Sol taraftaki listeleri iki ayrı gruba dinamik olarak basan fonksiyon
         function buildSidebarMenu() {
             cataloguesList.innerHTML = "";
-            otherList.innerHTML = "";
+            downloadList.innerHTML = "";
 
             let globalIdx = 0;
 
@@ -429,8 +428,8 @@
                 globalIdx++;
             });
 
-            // Other Presentations Listesini Oluşturma
-            presentationData.otherPresentations.forEach((deck) => {
+            // Download Links Listesini Oluşturma
+            presentationData.downloadLinks.forEach((deck) => {
                 const currentIdx = globalIdx;
                 const li = document.createElement('li');
                 const btn = document.createElement('button');
@@ -439,12 +438,20 @@
                 btn.setAttribute('data-index', currentIdx);
                 btn.addEventListener('click', () => switchPresentation(currentIdx));
                 li.appendChild(btn);
-                otherList.appendChild(li);
+                downloadList.appendChild(li);
                 globalIdx++;
             });
         }
 
         async function switchPresentation(index) {
+            const item = presentations[index];
+
+            // Eğer bir dış bağlantı ise doğrudan yeni sekmede aç ve fonksiyondan çık
+            if (item.isLink) {
+                window.open(item.url, '_blank');
+                return;
+            }
+
             const buttons = document.querySelectorAll('.deck-btn');
             buttons.forEach(b => {
                 const bIdx = parseInt(b.getAttribute('data-index'));
@@ -452,7 +459,7 @@
             });
 
             globalLoading.style.display = 'flex';
-            globalLoading.innerText = `Loading "${presentations[index].title}"...`;
+            globalLoading.innerText = `Loading "${item.title}"...`;
 
             book.innerHTML = '';
             sidebarThumbnails.innerHTML = '';
@@ -461,7 +468,7 @@
             currentId = 0;
             resetZoom();
 
-            await loadPDF(presentations[index].url);
+            await loadPDF(item.url);
         }
 
         function resizeBookToFit(viewport) {
@@ -553,6 +560,7 @@
                     if (pageNum > 3) { renderPage(pageNum, totalPages); }
                 }
             } catch (error) {
+                globalLoading.style.display = 'flex';
                 globalLoading.innerText = "Error loading PDF file. Please check file paths.";
                 console.error(error);
             }
