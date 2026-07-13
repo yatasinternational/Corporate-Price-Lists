@@ -33,10 +33,10 @@
             overflow: hidden;
         }
 
-        /* SOL MENU */
+        /* SOL PANEL */
         .sidebar-nav {
             width: 320px;
-            background: #002870; /* Yataş Kurumsal Lacivert */
+            background: #002870;
             border-right: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
             flex-direction: column;
@@ -102,9 +102,6 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.23s ease-in-out;
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
 
         .deck-btn:hover {
@@ -148,7 +145,6 @@
             position: relative;
         }
 
-        /* Pan-Zoom kapsayıcısının varsayılan durumu grab'dir */
         .pan-zoom-container {
             position: absolute;
             display: none;
@@ -158,11 +154,7 @@
             z-index: 10;
         }
         .pan-zoom-container:active { cursor: grabbing; }
-        
-        /* Linkin üzerine gelindiğinde grab mekanizmasını ezmek için kullanılacak class */
-        .pan-zoom-container.link-hovered {
-            cursor: default !important;
-        }
+        .pan-zoom-container.link-hovered { cursor: default !important; }
 
         .book {
             position: relative;
@@ -192,13 +184,13 @@
             border-radius: 6px;
         }
 
-        /* LİNK KATMANININ EN ÜSTE ÇIKMASI */
+        /* LİNK SEVİYESİ */
         .annotationLayer {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
             opacity: 1;
             pointer-events: auto;
-            z-index: 9999; /* Canvas ve pan alanının en üstüne çıkarttık */
+            z-index: 99999;
             transform-origin: top left;
         }
 
@@ -237,7 +229,7 @@
             font-weight: bold; padding: 1px 5px; border-radius: 3px;
         }
 
-        /* PREMİUM OK BÖLGELERİ */
+        /* OK BÖLGELERİ */
         .nav-overlay-zone {
             position: absolute;
             top: 0; height: 100%; width: 100px;
@@ -310,9 +302,6 @@
             
             <div class="menu-section-title">Catalogues</div>
             <ul class="deck-list" id="cataloguesList"></ul>
-
-            <div class="menu-section-title">Download Links</div>
-            <ul class="deck-list" id="downloadlinks"></ul>
         </div>
 
         <!-- WORKSPACE -->
@@ -356,14 +345,15 @@
     </div>
 
     <script>
+        // PDF kütüphanesinin worker ayarını sabitleyelim
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+
         const presentationData = {
             catalogues: [
                 { title: "Yataş Bedding Export Price List", url: "Yatas Bedding Export Price List.pdf" }
-            ],
-            downloadlinks: []
+            ]
         };
 
-        const presentations = [...presentationData.catalogues, ...presentationData.downloadlinks];
         let currentId = 0; let pages = []; let thumbElements = []; let pdfDoc = null;
         let scale = 1; let posX = 0; let posY = 0; let isDragging = false; let startX; let startY;
 
@@ -377,9 +367,7 @@
 
         function buildSidebarMenu() {
             cataloguesList.innerHTML = "";
-            let globalIdx = 0;
-            presentationData.catalogues.forEach((deck) => {
-                const currentIdx = globalIdx;
+            presentationData.catalogues.forEach((deck, currentIdx) => {
                 const li = document.createElement('li');
                 const btn = document.createElement('button');
                 btn.className = `deck-btn ${currentIdx === 0 ? 'active-deck' : ''}`;
@@ -387,7 +375,6 @@
                 btn.addEventListener('click', () => switchPresentation(currentIdx));
                 li.appendChild(btn);
                 cataloguesList.appendChild(li);
-                globalIdx++;
             });
         }
 
@@ -395,10 +382,11 @@
             globalLoading.style.display = 'flex';
             book.innerHTML = ''; sidebarThumbnails.innerHTML = '';
             pages = []; thumbElements = []; currentId = 0; resetZoom();
-            await loadPDF(presentations[index].url);
+            await loadPDF(presentationData.catalogues[index].url);
         }
 
         function resizeBookToFit(viewport) {
+            if (!viewport) return;
             const sceneW = scene.clientWidth; const sceneH = scene.clientHeight;
             const scaleX = (sceneW * 0.94) / viewport.width;
             const scaleY = (sceneH * 0.90) / viewport.height;
@@ -418,6 +406,7 @@
             }
         }
 
+        // HATA TOLERANSLI RENDER SİSTEMİ
         async function renderPage(pageNum) {
             try {
                 const page = await pdfDoc.getPage(pageNum);
@@ -439,21 +428,21 @@
 
                 await page.render({ canvasContext: context, viewport: viewport }).promise;
 
-                // METİN TARAYICI KATMANI
-                const textContent = await page.getTextContent();
-                const annotationLayerDiv = document.createElement('div');
-                annotationLayerDiv.className = 'annotationLayer';
-                annotationLayerDiv.style.position = 'absolute';
-                annotationLayerDiv.style.top = '0'; annotationLayerDiv.style.left = '0';
-                annotationLayerDiv.style.transformOrigin = 'top left';
+                // --- GÜVENLİ LİNK TARAYICI DÖNGÜSÜ (TRY-CATCH İZOLE) ---
+                try {
+                    const textContent = await page.getTextContent();
+                    const annotationLayerDiv = document.createElement('div');
+                    annotationLayerDiv.className = 'annotationLayer';
+                    annotationLayerDiv.style.position = 'absolute';
+                    annotationLayerDiv.style.top = '0'; annotationLayerDiv.style.left = '0';
+                    annotationLayerDiv.style.transformOrigin = 'top left';
 
-                textContent.items.forEach(item => {
-                    if (item.str.includes("http") || item.str.includes("we.tl")) {
-                        const urlMatch = item.str.match(/(https?:\/\/[^\s]+)/);
-                        if (urlMatch) {
-                            const actualUrl = urlMatch[0];
-                            const tx = pdfjsLib.Util.transform(viewport.transform, item.transform);
+                    textContent.items.forEach(item => {
+                        if (item.str && (item.str.includes("http") || item.str.includes("we.tl"))) {
+                            const urlMatch = item.str.match(/(https?:\/\/[^\s]+)/);
+                            const actualUrl = urlMatch ? urlMatch[0] : item.str.trim();
                             
+                            const tx = pdfjsLib.Util.transform(viewport.transform, item.transform);
                             const linkAnchor = document.createElement('a');
                             linkAnchor.href = actualUrl;
                             linkAnchor.target = '_blank';
@@ -464,15 +453,12 @@
                             linkAnchor.style.width = `${item.width * 2.0}px`;
                             linkAnchor.style.height = `${item.height * 2.2}px`;
                             linkAnchor.style.display = 'block';
-                            
-                            // ÇAKIŞMAYI ÖNLEYEN KRİTİK AYARLAR:
                             linkAnchor.style.cursor = 'pointer';
                             linkAnchor.style.zIndex = '99999';
 
-                            // Linkin üstündeyken grab fonksiyonunu kapatıp cursor'ı pointer yapıyoruz
-                            linkAnchor.addEventListener('mouseenter', (e) => {
+                            linkAnchor.addEventListener('mouseenter', () => {
                                 zoomContainer.classList.add('link-hovered');
-                                linkAnchor.style.backgroundColor = 'rgba(0, 40, 112, 0.25)';
+                                linkAnchor.style.backgroundColor = 'rgba(0, 40, 112, 0.2)';
                             });
                             
                             linkAnchor.addEventListener('mouseleave', () => {
@@ -480,22 +466,22 @@
                                 linkAnchor.style.backgroundColor = 'transparent';
                             });
 
-                            // Tıklama anında pan sürüklemesini engelliyoruz ki tarayıcı linki açsın
-                            linkAnchor.addEventListener('mousedown', (e) => {
-                                e.stopPropagation();
-                            });
+                            linkAnchor.addEventListener('mousedown', (e) => { e.stopPropagation(); });
 
                             annotationLayerDiv.appendChild(linkAnchor);
                         }
-                    }
-                });
+                    });
 
-                if (annotationLayerDiv.children.length > 0) {
-                    pageDiv.appendChild(annotationLayerDiv);
+                    if (annotationLayerDiv.children.length > 0) {
+                        pageDiv.appendChild(annotationLayerDiv);
+                    }
+                } catch (textErr) {
+                    console.warn("Metin katmanı taranamadı, sayfa düz render ediliyor:", textErr);
                 }
+                // ----------------------------------------------------
 
                 updateBookDisplay();
-            } catch (err) { console.error(err); }
+            } catch (err) { console.error("Sayfa render hatası:", err); }
         }
 
         async function renderThumbnail(pageNum) {
@@ -519,7 +505,7 @@
 
                 thumbBox.addEventListener('click', () => { currentId = pageNum - 1; resetZoom(); updateBookDisplay(); });
                 await page.render({ canvasContext: context, viewport: viewport }).promise;
-            } catch (err) { console.error(err); }
+            } catch (err) { console.error("Thumbnail hatası:", err); }
         }
 
         async function loadPDF(url) {
@@ -546,7 +532,8 @@
                     if (pageNum > 3) { renderPage(pageNum); }
                 }
             } catch (error) {
-                globalLoading.innerText = "PDF dosyası yüklenemedi.";
+                globalLoading.style.display = 'none';
+                alert("PDF dosyası yüklenemedi! Dosya adının doğruluğundan emin olun veya sunucu CORS izinlerini kontrol edin.");
                 console.error(error);
             }
         }
@@ -588,10 +575,9 @@
             e.preventDefault();
             if (e.deltaY < 0) { scale = Math.min(scale + 0.2, 5); } else { scale = Math.max(scale - 0.2, 1); }
             if (scale === 1) { posX = 0; posY = 0; } updateTransform();
-        });
+        }, { passive: false });
 
         scene.addEventListener('mousedown', (e) => {
-            // Eğer fare bir linkin (A etiketi) üzerindeyse sürükleme tetiklenmesin
             if (scale === 1 || e.target.closest('.nav-overlay-zone') || zoomContainer.classList.contains('link-hovered')) return;
             isDragging = true; startX = e.clientX - posX; startY = e.clientY - posY;
         });
@@ -608,7 +594,7 @@
 
         window.onload = () => {
             buildSidebarMenu();
-            loadPDF(presentations[0].url);
+            loadPDF(presentationData.catalogues[0].url);
         };
     </script>
 </body>
