@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yataş Group - Corporate Prıce Lısts</title>
+    <title>Yataş Group - Corporate Price Lists</title>
     
-    <!-- PDF.js Çekirdek Kütüphanesi (Kesin HTTPS Bağlantısı) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
         body {
-            background: #111b31;
+            background: url('image_26c6be.jpg') no-repeat center center fixed;
+            background-size: cover;
             display: flex;
             height: 100vh;
             font-family: 'Segoe UI', Arial, sans-serif;
@@ -26,264 +26,70 @@
             justify-content: center; align-items: center; font-size: 18px; letter-spacing: 1px;
         }
 
-        .portal-wrapper {
-            display: flex;
-            width: 100vw;
-            height: 100vh;
-            overflow: hidden;
-        }
+        .portal-wrapper { display: flex; width: 100vw; height: 100vh; overflow: hidden; }
 
-        /* SOL PANEL */
         .sidebar-nav {
-            width: 320px;
-            background: #002870;
-            border-right: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-            box-shadow: 5px 0 25px rgba(0,0,0,0.5);
-            z-index: 200;
-            overflow-y: auto;
+            width: 320px; background: #002870; border-right: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex; flex-direction: column; padding: 20px; box-shadow: 5px 0 25px rgba(0,0,0,0.5);
+            z-index: 200; overflow-y: auto;
         }
 
         .logo-container {
-            width: 100%;
-            background: #ffffff;
-            padding: 15px;
-            border-radius: 6px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            flex-shrink: 0;
+            width: 100%; background: #ffffff; padding: 15px; border-radius: 6px;
+            display: flex; justify-content: center; align-items: center; margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2); flex-shrink: 0;
         }
+        .logo-container img { max-width: 100%; height: auto; }
 
         .brand-subtitle {
-            font-size: 11px;
-            color: #a4c2f4;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 25px;
-            border-bottom: 1px solid rgba(255,255,255,0.15);
-            padding-bottom: 12px;
-            flex-shrink: 0;
+            font-size: 11px; color: #a4c2f4; text-transform: uppercase; letter-spacing: 2px;
+            margin-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 12px;
         }
 
         .menu-section-title {
-            font-size: 13px;
-            color: #ffffff;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            margin-top: 15px;
-            margin-bottom: 10px;
-            padding-left: 5px;
+            font-size: 13px; color: #ffffff; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 1.5px; margin-top: 15px; margin-bottom: 10px; padding-left: 5px;
             border-left: 3px solid #ffffff;
         }
 
-        .deck-list {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-bottom: 20px;
-        }
+        .deck-list { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
 
         .deck-btn {
-            width: 100%;
-            padding: 12px 16px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 6px;
-            color: #ffffff;
-            text-align: left;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.23s ease-in-out;
+            width: 100%; padding: 12px 16px; background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 6px; color: #ffffff;
+            text-align: left; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.23s;
         }
+        .deck-btn:hover { background: rgba(255, 255, 255, 0.15); transform: translateX(4px); }
+        .deck-btn.active-deck { background: #ffffff; color: #002870; }
 
-        .deck-btn:hover {
-            background: rgba(255, 255, 255, 0.15);
-            transform: translateX(4px);
-        }
-
-        .deck-btn.active-deck {
-            background: #ffffff;
-            border-color: #ffffff;
-            color: #002870; 
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-        }
-
-        /* WORKSPACE */
-        .workspace {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 0;
-            position: relative;
-            background: rgba(7, 13, 34, 0.35);
-        }
-
-        .main-container {
-            display: flex;
-            width: 98%;
-            flex: 1;
-            overflow: hidden;
-            gap: 15px;
-        }
+        /* WORKSPACE & PDF */
+        .workspace { flex: 1; display: flex; flex-direction: column; padding: 20px 0; background: rgba(7, 13, 34, 0.35); }
+        .main-container { display: flex; width: 98%; flex: 1; overflow: hidden; gap: 15px; }
+        .scene { flex: 1; position: relative; display: flex; justify-content: center; align-items: center; }
         
-        .scene {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .pan-zoom-container {
-            position: absolute;
-            display: none;
-            cursor: grab;
-            transform-origin: center center;
-            will-change: transform;
-            z-index: 10;
-        }
-        .pan-zoom-container:active { cursor: grabbing; }
-        .pan-zoom-container.link-hovered { cursor: default !important; }
-
-        .book {
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+        .pan-zoom-container { position: absolute; cursor: grab; transform-origin: center center; z-index: 10; }
         
-        .page {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            opacity: 0;
-            display: none;
-        }
+        .page { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; display: none; }
+        .page.active-page { display: block; opacity: 1; }
+
+        canvas { width: 100% !important; height: 100% !important; display: block; box-shadow: 0 25px 65px rgba(0,0,0,0.8); }
+
+        /* Link Katmanı */
+        .annotationLayer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; }
+        .annotationLayer > section > a:hover { background: rgba(255, 255, 255, 0.3); }
+
+        .nav-overlay-zone { position: absolute; top: 0; height: 100%; width: 100px; z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        .left-zone { left: 0; } .right-zone { right: 0; }
         
-        .page.active-page {
-            display: block;
-            opacity: 1;
-        }
-
-        canvas {
-            width: 100% !important;
-            height: 100% !important;
-            display: block;
-            box-shadow: 0 25px 65px rgba(0,0,0,0.8);
-            border-radius: 6px;
-        }
-
-        .annotationLayer {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            opacity: 1;
-            pointer-events: auto;
-            z-index: 99999;
-            transform-origin: top left;
-        }
-
-        /* SAĞ PANEL: SLAYT ŞERİDİ */
-        .sidebar-thumbnails {
-            width: 200px;
-            background: rgba(0, 40, 112, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-            padding: 15px 10px;
-            backdrop-filter: blur(15px);
-            z-index: 100;
-        }
-
-        .sidebar-thumbnails::-webkit-scrollbar { width: 5px; }
-        .sidebar-thumbnails::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
-
-        .thumb-box {
-            position: relative; width: 92%; cursor: pointer;
-            border: 2px solid rgba(255, 255, 255, 0.2); border-radius: 6px;
-            overflow: hidden; transition: all 0.2s ease-in-out; opacity: 0.5;
-            background: rgba(255, 255, 255, 0.05); flex-shrink: 0;
-        }
-        .thumb-box:hover { opacity: 0.8; border-color: rgba(255,255,255,0.5); }
-        .thumb-box.active-thumb { border-color: #ffffff; opacity: 1; box-shadow: 0 0 12px rgba(255,255,255,0.5); }
-        .thumb-box canvas { width: 100% !important; height: auto !important; display: block; }
-
-        .thumb-label {
-            position: absolute; bottom: 4px; right: 6px;
-            background: rgba(0,0,0,0.8); color: #fff; font-size: 10px;
-            font-weight: bold; padding: 1px 5px; border-radius: 3px;
-        }
-
-        /* OK BÖLGELERİ */
-        .nav-overlay-zone {
-            position: absolute;
-            top: 0; height: 100%; width: 100px;
-            z-index: 900;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .nav-overlay-zone.left-zone { left: 0; }
-        .nav-overlay-zone.right-zone { right: 0; }
-
-        .arrow-btn {
-            width: 50px; height: 50px;
-            background: rgba(0, 0, 0, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            color: #fff; font-size: 20px; cursor: pointer;
-            opacity: 0.35; transition: all 0.25s ease-in-out;
-            backdrop-filter: blur(5px);
-            user-select: none;
-        }
-        .nav-overlay-zone:hover .arrow-btn { opacity: 0.75; }
-        .arrow-btn:hover {
-            opacity: 1 !important; transform: scale(1.1);
-            background: #ffffff !important; color: #000000 !important;
-        }
+        .arrow-btn { width: 50px; height: 50px; background: rgba(0,0,0,0.6); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0.35; }
         
-        /* ALT PANEL */
-        .bottom-bar-area {
-            width: 100%; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; gap: 6px;
-            padding-top: 10px; flex-shrink: 0; z-index: 100;
-        }
+        .sidebar-thumbnails { width: 200px; background: rgba(0, 40, 112, 0.4); border-radius: 10px; overflow-y: auto; padding: 15px 10px; }
+        .thumb-box { margin-bottom: 10px; border: 2px solid rgba(255,255,255,0.2); cursor: pointer; opacity: 0.5; }
+        .thumb-box.active-thumb { border-color: #fff; opacity: 1; }
 
-        .controls {
-            display: flex; align-items: center; gap: 15px; 
-            background: rgba(0, 40, 112, 0.85); padding: 10px 25px; border-radius: 50px;
-            backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.15);
-        }
-        
-        .bottom-bar-area button {
-            padding: 8px 18px; font-size: 12px; font-weight: bold; cursor: pointer;
-            background: #fff; color: #002870; border: none; border-radius: 25px;
-            transition: all 0.2s;
-        }
-        .bottom-bar-area button:hover { background: #e5e5e5; }
-        .bottom-bar-area button:disabled { opacity: 0.2; cursor: not-allowed; }
-        
-        .goto-container { display: flex; align-items: center; gap: 5px; font-size: 13px; }
-        .goto-input {
-            width: 40px; padding: 3px 5px; border-radius: 5px;
-            border: 1px solid rgba(255,255,255,0.3); background: rgba(0,0,0,0.4);
-            color: #fff; text-align: center; font-weight: bold;
-        }
-        #pageIndicator { color: #ffffff; }
-        .hint { font-size: 12px; color: #ccc; }
+        .bottom-bar-area { width: 100%; display: flex; flex-direction: column; align-items: center; padding-top: 10px; }
+        .controls { display: flex; align-items: center; gap: 15px; background: rgba(0, 40, 112, 0.85); padding: 10px 25px; border-radius: 50px; }
+        button { padding: 8px 18px; cursor: pointer; border-radius: 25px; border: none; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -291,314 +97,112 @@
     <div id="globalLoading">Yataş Group Price Catalogues..</div>
     
     <div class="portal-wrapper">
-        
-        <!-- SOL PANEL -->
         <div class="sidebar-nav">
-            <div class="logo-container">
-                <div style="color:#002870; font-weight:bold; font-size:24px;">YATAŞ GROUP</div>
-            </div>
+            <div class="logo-container"><img src="image_26c641.png" alt="Yataş Grup Logo"></div>
             <div class="brand-subtitle">Corporate Price Lists</div>
-            
             <div class="menu-section-title">Catalogues</div>
             <ul class="deck-list" id="cataloguesList"></ul>
+            <div class="menu-section-title">Download Lınks</div>
+            <ul class="deck-list" id="downloadlinks"></ul>
         </div>
 
-        <!-- WORKSPACE -->
         <div class="workspace">
-            <div class="main-container" id="mainContainer">
+            <div class="main-container">
                 <div class="scene" id="scene">
-                    
                     <div id="zoomContainer" class="pan-zoom-container">
                         <div id="book" class="book"></div>
                     </div>
-
-                    <div class="nav-overlay-zone left-zone" id="zoneLeft">
-                        <div class="arrow-btn" id="overlayPrevBtn">&#10094;</div>
-                    </div>
-
-                    <div class="nav-overlay-zone right-zone" id="zoneRight">
-                        <div class="arrow-btn" id="overlayNextBtn">&#10095;</div>
-                    </div>
-
+                    <div class="nav-overlay-zone left-zone" id="zoneLeft"><div class="arrow-btn">&#10094;</div></div>
+                    <div class="nav-overlay-zone right-zone" id="zoneRight"><div class="arrow-btn">&#10095;</div></div>
                 </div>
-
                 <div class="sidebar-thumbnails" id="sidebarThumbnails"></div>
             </div>
 
-            <!-- KONTROLLER -->
-            <div class="bottom-bar-area" id="bottomBarArea">
+            <div class="bottom-bar-area">
                 <div class="controls">
-                    <button id="prevBtn" disabled>◀ Previous</button>
-                    <div class="goto-container">
-                        <input type="text" id="gotoInput" class="goto-input" value="1">
-                        <span id="pageIndicator">/ 0</span>
-                    </div>
+                    <button id="prevBtn">◀ Previous</button>
+                    <input type="text" id="gotoInput" style="width:40px; text-align:center;" value="1">
+                    <span id="pageIndicator">/ 0</span>
                     <button id="nextBtn">Next ▶</button>
                     <button id="zoomInBtn">🔍 +</button>
                     <button id="zoomOutBtn">🔍 -</button>
                 </div>
-                <div class="hint">Click links directly to open. Drag elsewhere to move the page.</div>
             </div>
         </div>
-
     </div>
 
     <script>
-        // PDF kütüphanesinin worker ayarını HTTPS ile sabitledik
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
-
-        // GitHub repository yolları için dinamik base URL belirleme
-        const isGitHubPages = window.location.hostname.includes('github.io');
-        const pdfBaseUrl = isGitHubPages ? window.location.pathname.replace(/\/$/, '') + '/' : '';
-
         const presentationData = {
             catalogues: [
-                { title: "Yataş Bedding Export Price List", url: "Yatas Bedding Export Price List.pdf" }
+                { title: "Yataş Bedding July 2026 USD", url: "BEDDING_JULY2026_DOLAR_HIGH.pdf" },
+                { title: "Yataş Bedding July 2026 EUR", url: "BEDDING_JULY2026_EURO_HIGH.pdf" },
+            ],
+            downloadlinks: [
+                { title: "Yataş Bedding Export Price List", url: "Yataş Bedding Export Price List.pdf" }
             ]
         };
 
-        let currentId = 0; let pages = []; let thumbElements = []; let pdfDoc = null;
-        let scale = 1; let posX = 0; let posY = 0; let isDragging = false; let startX; let startY;
+        const presentations = [...presentationData.catalogues, ...presentationData.downloadlinks];
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
-        const zoomContainer = document.getElementById('zoomContainer');
-        const book = document.getElementById('book');
-        const scene = document.getElementById('scene');
-        const sidebarThumbnails = document.getElementById('sidebarThumbnails');
-        const gotoInput = document.getElementById('gotoInput');
-        const cataloguesList = document.getElementById('cataloguesList');
-        const globalLoading = document.getElementById('globalLoading');
-
-        function buildSidebarMenu() {
-            cataloguesList.innerHTML = "";
-            presentationData.catalogues.forEach((deck, currentIdx) => {
-                const li = document.createElement('li');
-                const btn = document.createElement('button');
-                btn.className = `deck-btn ${currentIdx === 0 ? 'active-deck' : ''}`;
-                btn.innerText = deck.title;
-                btn.addEventListener('click', () => switchPresentation(currentIdx));
-                li.appendChild(btn);
-                cataloguesList.appendChild(li);
-            });
-        }
-
-        async function switchPresentation(index) {
-            globalLoading.style.display = 'flex';
-            book.innerHTML = ''; sidebarThumbnails.innerHTML = '';
-            pages = []; thumbElements = []; currentId = 0; resetZoom();
-            await loadPDF(presentationData.catalogues[index].url);
-        }
-
-        function resizeBookToFit(viewport) {
-            if (!viewport) return;
-            const sceneW = scene.clientWidth; const sceneH = scene.clientHeight;
-            const scaleX = (sceneW * 0.94) / viewport.width;
-            const scaleY = (sceneH * 0.90) / viewport.height;
-            const idealScale = Math.min(scaleX, scaleY);
-            
-            book.style.width = Math.floor(viewport.width * idealScale) + 'px';
-            book.style.height = Math.floor(viewport.height * idealScale) + 'px';
-
-            const activePageDiv = pages[currentId];
-            if (activePageDiv) {
-                const layer = activePageDiv.querySelector('.annotationLayer');
-                if (layer) {
-                    layer.style.transform = `scale(${idealScale / 2.0})`;
-                    layer.style.width = viewport.width + 'px';
-                    layer.style.height = viewport.height + 'px';
-                }
-            }
-        }
+        let currentId = 0, pages = [], pdfDoc = null, scale = 1, posX = 0, posY = 0, isDragging = false;
+        const book = document.getElementById('book'), scene = document.getElementById('scene'), zoomContainer = document.getElementById('zoomContainer');
 
         async function renderPage(pageNum) {
-            try {
-                const page = await pdfDoc.getPage(pageNum);
-                const viewport = page.getViewport({ scale: 2.0 });
+            const page = await pdfDoc.getPage(pageNum);
+            const viewport = page.getViewport({ scale: 2.0 });
+            const pageDiv = document.createElement('div');
+            pageDiv.className = 'page';
+            
+            const canvas = document.createElement('canvas');
+            canvas.height = viewport.height; canvas.width = viewport.width;
+            pageDiv.appendChild(canvas);
+            book.appendChild(pageDiv);
 
-                const pageDiv = document.createElement('div');
-                pageDiv.className = 'page';
-                pageDiv.style.position = 'relative';
-                
-                const canvas = document.createElement('canvas');
-                const context = canvas.getContext('2d');
-                canvas.height = viewport.height; canvas.width = viewport.width;
+            await page.render({ canvasContext: canvas.getContext('2d'), viewport: viewport }).promise;
 
-                pageDiv.appendChild(canvas);
-                book.appendChild(pageDiv);
+            // Link Katmanı Entegrasyonu
+            const annotations = await page.getAnnotations();
+            const annoDiv = document.createElement('div');
+            annoDiv.className = 'annotationLayer';
+            pdfjsLib.AnnotationLayer.render({
+                viewport: viewport.clone({ dontFlip: true }),
+                div: annoDiv,
+                annotations: annotations,
+                page: page
+            });
+            pageDiv.appendChild(annoDiv);
 
-                pages[pageNum - 1] = pageDiv;
-                pageDiv.pdfViewport = page.getViewport({ scale: 1.0 });
-
-                await page.render({ canvasContext: context, viewport: viewport }).promise;
-
-                try {
-                    const textContent = await page.getTextContent();
-                    const annotationLayerDiv = document.createElement('div');
-                    annotationLayerDiv.className = 'annotationLayer';
-                    annotationLayerDiv.style.position = 'absolute';
-                    annotationLayerDiv.style.top = '0'; annotationLayerDiv.style.left = '0';
-                    annotationLayerDiv.style.transformOrigin = 'top left';
-
-                    textContent.items.forEach(item => {
-                        if (item.str && (item.str.includes("http") || item.str.includes("we.tl"))) {
-                            const urlMatch = item.str.match(/(https?:\/\/[^\s]+)/);
-                            const actualUrl = urlMatch ? urlMatch[0] : item.str.trim();
-                            
-                            const tx = pdfjsLib.Util.transform(viewport.transform, item.transform);
-                            const linkAnchor = document.createElement('a');
-                            linkAnchor.href = actualUrl;
-                            linkAnchor.target = '_blank';
-                            linkAnchor.style.position = 'absolute';
-                            
-                            linkAnchor.style.left = `${tx[4]}px`;
-                            linkAnchor.style.top = `${tx[5] - (item.height * 1.8)}px`; 
-                            linkAnchor.style.width = `${item.width * 2.0}px`;
-                            linkAnchor.style.height = `${item.height * 2.2}px`;
-                            linkAnchor.style.display = 'block';
-                            linkAnchor.style.cursor = 'pointer';
-                            linkAnchor.style.zIndex = '99999';
-
-                            linkAnchor.addEventListener('mouseenter', () => {
-                                zoomContainer.classList.add('link-hovered');
-                                linkAnchor.style.backgroundColor = 'rgba(0, 40, 112, 0.2)';
-                            });
-                            
-                            linkAnchor.addEventListener('mouseleave', () => {
-                                zoomContainer.classList.remove('link-hovered');
-                                linkAnchor.style.backgroundColor = 'transparent';
-                            });
-
-                            linkAnchor.addEventListener('mousedown', (e) => { e.stopPropagation(); });
-
-                            annotationLayerDiv.appendChild(linkAnchor);
-                        }
-                    });
-
-                    if (annotationLayerDiv.children.length > 0) {
-                        pageDiv.appendChild(annotationLayerDiv);
-                    }
-                } catch (textErr) {
-                    console.warn("Metin katmanı taranamadı:", textErr);
-                }
-
-                updateBookDisplay();
-            } catch (err) { console.error("Sayfa render hatası:", err); }
-        }
-
-        async function renderThumbnail(pageNum) {
-            try {
-                const page = await pdfDoc.getPage(pageNum);
-                const viewport = page.getViewport({ scale: 0.35 });
-                const thumbBox = document.createElement('div');
-                thumbBox.className = 'thumb-box';
-                
-                const canvas = document.createElement('canvas');
-                const context = canvas.getContext('2d');
-                canvas.height = viewport.height; canvas.width = viewport.width;
-                thumbBox.appendChild(canvas);
-
-                const label = document.createElement('div');
-                label.className = 'thumb-label'; label.innerText = pageNum;
-                thumbBox.appendChild(label);
-
-                sidebarThumbnails.appendChild(thumbBox);
-                thumbElements[pageNum - 1] = thumbBox;
-
-                thumbBox.addEventListener('click', () => { currentId = pageNum - 1; resetZoom(); updateBookDisplay(); });
-                await page.render({ canvasContext: context, viewport: viewport }).promise;
-            } catch (err) { console.error("Thumbnail hatası:", err); }
+            pageDiv.pdfViewport = page.getViewport({ scale: 1.0 });
+            pages[pageNum - 1] = pageDiv;
+            updateBookDisplay();
         }
 
         async function loadPDF(url) {
-            try {
-                // GitHub pages alt klasör yolları için url düzeltmesi
-                const targetUrl = url.startsWith('http') ? url : window.location.origin + pdfBaseUrl + url;
-                
-                pdfDoc = await pdfjsLib.getDocument(targetUrl).promise;
-                const totalPages = pdfDoc.numPages;
-                pages = new Array(totalPages);
-                thumbElements = new Array(totalPages);
-
-                for (let pageNum = 1; pageNum <= Math.min(3, totalPages); pageNum++) {
-                    await renderPage(pageNum);
-                }
-
-                globalLoading.style.display = 'none';
-                zoomContainer.style.display = 'block';
-                updateBookDisplay();
-
-                for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
-                    renderThumbnail(pageNum).then(() => {
-                        if (pageNum - 1 === currentId && thumbElements[currentId]) {
-                            thumbElements[currentId].classList.add('active-thumb');
-                        }
-                    });
-                    if (pageNum > 3) { renderPage(pageNum); }
-                }
-            } catch (error) {
-                globalLoading.style.display = 'none';
-                alert("PDF dosyası yüklenemedi! Lütfen dosyanın repository kök dizininde yer aldığından ve isminin tam uyuştuğundan emin ol abi.");
-                console.error(error);
-            }
+            book.innerHTML = ''; pages = [];
+            pdfDoc = await pdfjsLib.getDocument(url).promise;
+            for (let i = 1; i <= pdfDoc.numPages; i++) await renderPage(i);
+            document.getElementById('globalLoading').style.display = 'none';
         }
 
         function updateBookDisplay() {
-            const total = pages.length; if (total === 0) return;
-
-            pages.forEach((page, index) => {
-                if (!page) return;
-                if (index === currentId) {
-                    page.classList.add('active-page');
-                    resizeBookToFit(page.pdfViewport);
-                } else { page.classList.remove('active-page'); }
-            });
-
-            thumbElements.forEach((thumb, index) => {
-                if (!thumb) return;
-                if (index === currentId) {
-                    thumb.classList.add('active-thumb');
-                    thumb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                } else { thumb.classList.remove('active-thumb'); }
-            });
-
-            document.getElementById('prevBtn').disabled = (currentId === 0);
-            document.getElementById('nextBtn').disabled = (currentId >= total - 1);
-            gotoInput.value = currentId + 1;
-            document.getElementById('pageIndicator').innerText = `/ ${total}`;
+            pages.forEach((p, i) => p.classList.toggle('active-page', i === currentId));
+            document.getElementById('gotoInput').value = currentId + 1;
         }
 
-        function flipNext() { if (currentId < pages.length - 1) { currentId++; resetZoom(); updateBookDisplay(); } }
-        function flipPrev() { if (currentId > 0) { currentId--; resetZoom(); updateBookDisplay(); } }
-        function resetZoom() { scale = 1; posX = 0; posY = 0; zoomContainer.classList.remove('link-hovered'); updateTransform(); }
-        function updateTransform() { zoomContainer.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`; }
-
-        document.getElementById('zoneLeft').addEventListener('click', (e) => { if (scale > 1) return; flipPrev(); });
-        document.getElementById('zoneRight').addEventListener('click', (e) => { if (scale > 1) return; flipNext(); });
-
-        scene.addEventListener('wheel', (e) => {
-            e.preventDefault();
-            if (e.deltaY < 0) { scale = Math.min(scale + 0.2, 5); } else { scale = Math.max(scale - 0.2, 1); }
-            if (scale === 1) { posX = 0; posY = 0; } updateTransform();
-        }, { passive: false });
-
-        scene.addEventListener('mousedown', (e) => {
-            if (scale === 1 || e.target.closest('.nav-overlay-zone') || zoomContainer.classList.contains('link-hovered')) return;
-            isDragging = true; startX = e.clientX - posX; startY = e.clientY - posY;
+        document.getElementById('nextBtn').onclick = () => { if(currentId < pages.length-1) {currentId++; updateBookDisplay();} };
+        document.getElementById('prevBtn').onclick = () => { if(currentId > 0) {currentId--; updateBookDisplay();} };
+        
+        // Menü kurulumu
+        const cataloguesList = document.getElementById('cataloguesList');
+        presentationData.catalogues.forEach((d, i) => {
+            const btn = document.createElement('button');
+            btn.className = 'deck-btn'; btn.innerText = d.title;
+            btn.onclick = () => loadPDF(d.url);
+            cataloguesList.appendChild(btn);
         });
 
-        window.addEventListener('mousemove', (e) => { if (!isDragging) return; posX = e.clientX - startX; posY = e.clientY - startY; updateTransform(); });
-        window.addEventListener('mouseup', () => { isDragging = false; });
-
-        document.getElementById('zoomInBtn').addEventListener('click', () => { scale = Math.min(scale + 0.5, 5); updateTransform(); });
-        document.getElementById('zoomOutBtn').addEventListener('click', () => { scale = Math.max(scale - 0.5, 1); if(scale===1){posX=0;posY=0;} updateTransform(); });
-        document.getElementById('nextBtn').addEventListener('click', flipNext);
-        document.getElementById('prevBtn').addEventListener('click', flipPrev);
-
-        window.addEventListener('resize', () => { if (pages[currentId]) updateBookDisplay(); });
-
-        window.onload = () => {
-            buildSidebarMenu();
-            loadPDF(presentationData.catalogues[0].url);
-        };
+        window.onload = () => loadPDF(presentations[0].url);
     </script>
 </body>
 </html>
