@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Yataş Group - Corporate Prıce Lısts</title>
     
-    <!-- PDF.js Çekirdek Kütüphanesi -->
+    <!-- PDF.js Çekirdek Kütüphanesi (Kesin HTTPS Bağlantısı) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 
     <style>
@@ -184,7 +184,6 @@
             border-radius: 6px;
         }
 
-        /* LİNK SEVİYESİ */
         .annotationLayer {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -345,8 +344,12 @@
     </div>
 
     <script>
-        // PDF kütüphanesinin worker ayarını sabitleyelim
+        // PDF kütüphanesinin worker ayarını HTTPS ile sabitledik
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+
+        // GitHub repository yolları için dinamik base URL belirleme
+        const isGitHubPages = window.location.hostname.includes('github.io');
+        const pdfBaseUrl = isGitHubPages ? window.location.pathname.replace(/\/$/, '') + '/' : '';
 
         const presentationData = {
             catalogues: [
@@ -406,7 +409,6 @@
             }
         }
 
-        // HATA TOLERANSLI RENDER SİSTEMİ
         async function renderPage(pageNum) {
             try {
                 const page = await pdfDoc.getPage(pageNum);
@@ -428,7 +430,6 @@
 
                 await page.render({ canvasContext: context, viewport: viewport }).promise;
 
-                // --- GÜVENLİ LİNK TARAYICI DÖNGÜSÜ (TRY-CATCH İZOLE) ---
                 try {
                     const textContent = await page.getTextContent();
                     const annotationLayerDiv = document.createElement('div');
@@ -476,9 +477,8 @@
                         pageDiv.appendChild(annotationLayerDiv);
                     }
                 } catch (textErr) {
-                    console.warn("Metin katmanı taranamadı, sayfa düz render ediliyor:", textErr);
+                    console.warn("Metin katmanı taranamadı:", textErr);
                 }
-                // ----------------------------------------------------
 
                 updateBookDisplay();
             } catch (err) { console.error("Sayfa render hatası:", err); }
@@ -510,7 +510,10 @@
 
         async function loadPDF(url) {
             try {
-                pdfDoc = await pdfjsLib.getDocument(url).promise;
+                // GitHub pages alt klasör yolları için url düzeltmesi
+                const targetUrl = url.startsWith('http') ? url : window.location.origin + pdfBaseUrl + url;
+                
+                pdfDoc = await pdfjsLib.getDocument(targetUrl).promise;
                 const totalPages = pdfDoc.numPages;
                 pages = new Array(totalPages);
                 thumbElements = new Array(totalPages);
@@ -533,7 +536,7 @@
                 }
             } catch (error) {
                 globalLoading.style.display = 'none';
-                alert("PDF dosyası yüklenemedi! Dosya adının doğruluğundan emin olun veya sunucu CORS izinlerini kontrol edin.");
+                alert("PDF dosyası yüklenemedi! Lütfen dosyanın repository kök dizininde yer aldığından ve isminin tam uyuştuğundan emin ol abi.");
                 console.error(error);
             }
         }
