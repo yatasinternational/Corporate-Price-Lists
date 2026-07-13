@@ -33,7 +33,7 @@
             overflow: hidden;
         }
 
-        /* SOL PANEL */
+        /* SOL MENU */
         .sidebar-nav {
             width: 320px;
             background: #002870; /* Yataş Kurumsal Lacivert */
@@ -57,12 +57,6 @@
             margin-bottom: 20px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.2);
             flex-shrink: 0;
-        }
-
-        .logo-container img {
-            max-width: 100%;
-            height: auto;
-            display: block;
         }
 
         .brand-subtitle {
@@ -154,6 +148,7 @@
             position: relative;
         }
 
+        /* Pan-Zoom kapsayıcısının varsayılan durumu grab'dir */
         .pan-zoom-container {
             position: absolute;
             display: none;
@@ -164,6 +159,11 @@
         }
         .pan-zoom-container:active { cursor: grabbing; }
         
+        /* Linkin üzerine gelindiğinde grab mekanizmasını ezmek için kullanılacak class */
+        .pan-zoom-container.link-hovered {
+            cursor: default !important;
+        }
+
         .book {
             position: relative;
             display: flex;
@@ -192,13 +192,14 @@
             border-radius: 6px;
         }
 
-        /* AKILLI TEXT-LINK KATMANI */
+        /* LİNK KATMANININ EN ÜSTE ÇIKMASI */
         .annotationLayer {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
             opacity: 1;
-            pointer-events: auto; /* Tıklamayı etkinleştirir */
-            z-index: 999;
+            pointer-events: auto;
+            z-index: 9999; /* Canvas ve pan alanının en üstüne çıkarttık */
+            transform-origin: top left;
         }
 
         /* SAĞ PANEL: SLAYT ŞERİDİ */
@@ -236,7 +237,7 @@
             font-weight: bold; padding: 1px 5px; border-radius: 3px;
         }
 
-        /* PREMIUM GEÇİŞ OKLARI */
+        /* PREMİUM OK BÖLGELERİ */
         .nav-overlay-zone {
             position: absolute;
             top: 0; height: 100%; width: 100px;
@@ -300,10 +301,9 @@
     
     <div class="portal-wrapper">
         
-        <!-- SOL MENU -->
+        <!-- SOL PANEL -->
         <div class="sidebar-nav">
             <div class="logo-container">
-                <!-- Şirket logosu buraya gelecek -->
                 <div style="color:#002870; font-weight:bold; font-size:24px;">YATAŞ GROUP</div>
             </div>
             <div class="brand-subtitle">Corporate Price Lists</div>
@@ -349,7 +349,7 @@
                     <button id="zoomInBtn">🔍 +</button>
                     <button id="zoomOutBtn">🔍 -</button>
                 </div>
-                <div class="hint">Use your mouse wheel to zoom or click links directly.</div>
+                <div class="hint">Click links directly to open. Drag elsewhere to move the page.</div>
             </div>
         </div>
 
@@ -373,7 +373,6 @@
         const sidebarThumbnails = document.getElementById('sidebarThumbnails');
         const gotoInput = document.getElementById('gotoInput');
         const cataloguesList = document.getElementById('cataloguesList');
-        const downloadlinks = document.getElementById('downloadlinks');
         const globalLoading = document.getElementById('globalLoading');
 
         function buildSidebarMenu() {
@@ -412,7 +411,6 @@
             if (activePageDiv) {
                 const layer = activePageDiv.querySelector('.annotationLayer');
                 if (layer) {
-                    // Render ölçeği 2.0 olduğu için yazıları kutuya oranlıyoruz
                     layer.style.transform = `scale(${idealScale / 2.0})`;
                     layer.style.width = viewport.width + 'px';
                     layer.style.height = viewport.height + 'px';
@@ -420,11 +418,10 @@
             }
         }
 
-        // AKILLI LINK OKUYUCU ENTEGRELİ RENDER FONKSİYONU
         async function renderPage(pageNum) {
             try {
                 const page = await pdfDoc.getPage(pageNum);
-                const viewport = page.getViewport({ scale: 2.0 }); // Netlik için 2.0
+                const viewport = page.getViewport({ scale: 2.0 });
 
                 const pageDiv = document.createElement('div');
                 pageDiv.className = 'page';
@@ -442,7 +439,7 @@
 
                 await page.render({ canvasContext: context, viewport: viewport }).promise;
 
-                // --- HACKER METİN TARAMA VE LİNK JENERATÖRÜ ---
+                // METİN TARAYICI KATMANI
                 const textContent = await page.getTextContent();
                 const annotationLayerDiv = document.createElement('div');
                 annotationLayerDiv.className = 'annotationLayer';
@@ -451,7 +448,6 @@
                 annotationLayerDiv.style.transformOrigin = 'top left';
 
                 textContent.items.forEach(item => {
-                    // Satırda link formatı tarama
                     if (item.str.includes("http") || item.str.includes("we.tl")) {
                         const urlMatch = item.str.match(/(https?:\/\/[^\s]+)/);
                         if (urlMatch) {
@@ -463,17 +459,31 @@
                             linkAnchor.target = '_blank';
                             linkAnchor.style.position = 'absolute';
                             
-                            // Milimetrik yerleşim hesaplamaları
                             linkAnchor.style.left = `${tx[4]}px`;
                             linkAnchor.style.top = `${tx[5] - (item.height * 1.8)}px`; 
                             linkAnchor.style.width = `${item.width * 2.0}px`;
                             linkAnchor.style.height = `${item.height * 2.2}px`;
                             linkAnchor.style.display = 'block';
-                            linkAnchor.style.cursor = 'pointer';
                             
-                            // Hover görsel geri bildirimi
-                            linkAnchor.addEventListener('mouseenter', () => linkAnchor.style.backgroundColor = 'rgba(0, 40, 112, 0.25)');
-                            linkAnchor.addEventListener('mouseleave', () => linkAnchor.style.backgroundColor = 'transparent');
+                            // ÇAKIŞMAYI ÖNLEYEN KRİTİK AYARLAR:
+                            linkAnchor.style.cursor = 'pointer';
+                            linkAnchor.style.zIndex = '99999';
+
+                            // Linkin üstündeyken grab fonksiyonunu kapatıp cursor'ı pointer yapıyoruz
+                            linkAnchor.addEventListener('mouseenter', (e) => {
+                                zoomContainer.classList.add('link-hovered');
+                                linkAnchor.style.backgroundColor = 'rgba(0, 40, 112, 0.25)';
+                            });
+                            
+                            linkAnchor.addEventListener('mouseleave', () => {
+                                zoomContainer.classList.remove('link-hovered');
+                                linkAnchor.style.backgroundColor = 'transparent';
+                            });
+
+                            // Tıklama anında pan sürüklemesini engelliyoruz ki tarayıcı linki açsın
+                            linkAnchor.addEventListener('mousedown', (e) => {
+                                e.stopPropagation();
+                            });
 
                             annotationLayerDiv.appendChild(linkAnchor);
                         }
@@ -483,7 +493,6 @@
                 if (annotationLayerDiv.children.length > 0) {
                     pageDiv.appendChild(annotationLayerDiv);
                 }
-                // ----------------------------------------------
 
                 updateBookDisplay();
             } catch (err) { console.error(err); }
@@ -537,7 +546,7 @@
                     if (pageNum > 3) { renderPage(pageNum); }
                 }
             } catch (error) {
-                globalLoading.innerText = "PDF dosyası yüklenemedi. Dosya adını kontrol edin.";
+                globalLoading.innerText = "PDF dosyası yüklenemedi.";
                 console.error(error);
             }
         }
@@ -569,7 +578,7 @@
 
         function flipNext() { if (currentId < pages.length - 1) { currentId++; resetZoom(); updateBookDisplay(); } }
         function flipPrev() { if (currentId > 0) { currentId--; resetZoom(); updateBookDisplay(); } }
-        function resetZoom() { scale = 1; posX = 0; posY = 0; updateTransform(); }
+        function resetZoom() { scale = 1; posX = 0; posY = 0; zoomContainer.classList.remove('link-hovered'); updateTransform(); }
         function updateTransform() { zoomContainer.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`; }
 
         document.getElementById('zoneLeft').addEventListener('click', (e) => { if (scale > 1) return; flipPrev(); });
@@ -582,7 +591,8 @@
         });
 
         scene.addEventListener('mousedown', (e) => {
-            if (scale === 1 || e.target.closest('.nav-overlay-zone') || e.target.tagName === 'A') return;
+            // Eğer fare bir linkin (A etiketi) üzerindeyse sürükleme tetiklenmesin
+            if (scale === 1 || e.target.closest('.nav-overlay-zone') || zoomContainer.classList.contains('link-hovered')) return;
             isDragging = true; startX = e.clientX - posX; startY = e.clientY - posY;
         });
 
