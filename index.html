@@ -312,7 +312,7 @@
 </head>
 <body>
 
-    <div id="globalLoading">Yataş Group Price Catalogues are launching...</div>
+    <div id="globalLoading">Yataş Group Deck Engine is launching...</div>
     
     <div class="portal-wrapper">
         
@@ -321,14 +321,14 @@
             <div class="logo-container">
                 <img src="image_26c641.png" alt="Yataş Grup Logo">
             </div>
-            <div class="brand-subtitle">Prıce Lısts</div>
+            <div class="brand-subtitle">Corporate Deck Portal</div>
             
             <!-- 1. ANA BAŞLIK: CATALOGUES -->
             <div class="menu-section-title">Catalogues</div>
             <ul class="deck-list" id="cataloguesList"></ul>
 
             <!-- 2. ANA BAŞLIK: OTHER PRESENTATIONS -->
-            <div class="menu-section-title">Download Lınks</div>
+            <div class="menu-section-title">Other Presentatıons</div>
             <ul class="deck-list" id="otherList"></ul>
         </div>
 
@@ -377,17 +377,18 @@
         // Dosya isimlerini (url kısımlarını) klasöründekilerle birebir eşleyebilirsin abi.
         const presentationData = {
             catalogues: [
-                { title: "Yataş Bedding July 2026 USD", url: "BEDDING_JULY2026_DOLAR_HIGH.pdf" },
-                { title: "Yataş Bedding July 2026 EUR", url: "BEDDING_JULY2026_EURO_HIGH.pdf" },
+                { title: "Enza Home", url: "Enza Home.pdf" },
+                { title: "Yataş Bedding", url: "Yataş Bedding.pdf" },
             ],
-            download lınks: [
-                { title: "Yataş Bedding July 2026 USD_High Quality", url: "https://we.tl/t-hHbsYtkAQv63LRYm" isLink: true },
-                { title: "Yataş Bedding July 2026 EUR_High Quality", url: "https://we.tl/t-xABOnqmf2pMj3dhK" isLink: true }
+            otherPresentations: [
+                { title: "Yataş Projects", url: "Yataş Projects.pdf" },
+                { title: "Yataş Projects References", url: "Yataş Projects References.pdf" },
+                { title: "Franchisee Introduction Handbook", url: "Franchisee Introduction Handbook.pdf" }
             ]
         };
 
         // Arka planda aktif sunumu yönetmek için düz listeye çeviriyoruz
-        const presentations = [...presentationData.catalogues, ...presentationData.otherLinks];
+        const presentations = [...presentationData.catalogues, ...presentationData.otherPresentations];
 
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
@@ -430,7 +431,7 @@
             });
 
             // Other Presentations Listesini Oluşturma
-            presentationData.otherLinks.forEach((deck) => {
+            presentationData.otherPresentations.forEach((deck) => {
                 const currentIdx = globalIdx;
                 const li = document.createElement('li');
                 const btn = document.createElement('button');
