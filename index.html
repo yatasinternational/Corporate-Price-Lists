@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yataş Group - Corporate Prıce Lısts</title>
+    <title>Yataş Group - Corporate Deck Portal</title>
     
+    <!-- PDF.js kütüphanesi -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 
     <style>
@@ -26,12 +27,17 @@
             justify-content: center; align-items: center; font-size: 18px; letter-spacing: 1px;
         }
 
-        .portal-wrapper { display: flex; width: 100vw; height: 100vh; overflow: hidden; }
+        .portal-wrapper {
+            display: flex;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
 
-        /* SOL PANEL */
+        /* SOL PANEL: YATAŞ KURUMSAL BANNER */
         .sidebar-nav {
             width: 320px;
-            background: #002870;
+            background: #002870; /* Yataş Kurumsal Lacivert */
             border-right: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
             flex-direction: column;
@@ -44,6 +50,7 @@
         .sidebar-nav::-webkit-scrollbar { width: 4px; }
         .sidebar-nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); }
 
+        /* Beyaz Logoluk Alan */
         .logo-container {
             width: 100%;
             background: #ffffff;
@@ -57,7 +64,11 @@
             flex-shrink: 0;
         }
 
-        .logo-container img { max-width: 100%; height: auto; display: block; }
+        .logo-container img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
 
         .brand-subtitle {
             font-size: 11px;
@@ -70,6 +81,7 @@
             flex-shrink: 0;
         }
 
+        /* KATEGORİ BAŞLIKLARI */
         .menu-section-title {
             font-size: 13px;
             color: #ffffff;
@@ -80,9 +92,17 @@
             margin-bottom: 10px;
             padding-left: 5px;
             border-left: 3px solid #ffffff;
+            padding-top: 2px;
+            padding-bottom: 2px;
         }
 
-        .deck-list { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+        .deck-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
 
         .deck-btn {
             width: 100%;
@@ -101,65 +121,242 @@
             gap: 10px;
         }
 
-        .deck-btn:hover { background: rgba(255, 255, 255, 0.15); transform: translateX(4px); }
-        .deck-btn.active-deck { background: #ffffff; border-color: #ffffff; color: #002870; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); }
+        .deck-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateX(4px);
+        }
+
+        .deck-btn.active-deck {
+            background: #ffffff;
+            border-color: #ffffff;
+            color: #002870; 
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .deck-btn::before {
+            content: "•";
+            color: #fff;
+            font-size: 16px;
+        }
+        .deck-btn.active-deck::before {
+            color: #002870;
+        }
 
         /* WORKSPACE */
-        .workspace { flex: 1; display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 20px 0; position: relative; background: rgba(7, 13, 34, 0.35); }
-        .main-container { display: flex; width: 98%; flex: 1; overflow: hidden; gap: 15px; }
-        .scene { flex: 1; display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative; }
-        .pan-zoom-container { position: absolute; display: none; cursor: grab; transform-origin: center center; z-index: 10; }
+        .workspace {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            position: relative;
+            background: rgba(7, 13, 34, 0.35);
+        }
+
+        .main-container {
+            display: flex;
+            width: 98%;
+            flex: 1;
+            overflow: hidden;
+            gap: 15px;
+        }
         
-        .page { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; display: none; }
-        .page.active-page { display: block; opacity: 1; }
-        canvas { width: 100% !important; height: 100% !important; display: block; box-shadow: 0 25px 65px rgba(0,0,0,0.8); border-radius: 6px; }
+        .scene {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
 
-        .nav-overlay-zone { position: absolute; top: 0; height: 100%; width: 100px; z-index: 9999; display: flex; align-items: center; justify-content: center; }
-        .left-zone { left: 0; } .right-zone { right: 0; }
-        .arrow-btn { width: 50px; height: 50px; background: rgba(0, 0, 0, 0.6); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; cursor: pointer; opacity: 0.35; transition: all 0.25s; }
-        .arrow-btn:hover { opacity: 1; background: #ffffff; color: #000; }
+        .pan-zoom-container {
+            position: absolute;
+            display: none;
+            cursor: grab;
+            transform-origin: center center;
+            will-change: transform;
+            z-index: 10;
+        }
+        .pan-zoom-container:active { cursor: grabbing; }
+        
+        .book {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .page {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            opacity: 0;
+            display: none;
+        }
+        
+        .page.active-page {
+            display: block;
+            opacity: 1;
+        }
 
-        .sidebar-thumbnails { width: 200px; background: rgba(0, 40, 112, 0.4); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 10px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; gap: 15px; padding: 15px 10px; backdrop-filter: blur(15px); }
-        .thumb-box { position: relative; width: 92%; cursor: pointer; border: 2px solid rgba(255, 255, 255, 0.2); border-radius: 6px; overflow: hidden; opacity: 0.5; }
-        .thumb-box.active-thumb { border-color: #ffffff; opacity: 1; }
-        .thumb-label { position: absolute; bottom: 4px; right: 6px; background: rgba(0,0,0,0.8); color: #fff; font-size: 10px; padding: 1px 5px; }
+        canvas {
+            width: 100% !important;
+            height: 100% !important;
+            display: block;
+            box-shadow: 0 25px 65px rgba(0,0,0,0.8);
+            border-radius: 6px;
+        }
 
-        .bottom-bar-area { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 6px; padding-top: 10px; }
-        .controls { display: flex; align-items: center; gap: 15px; background: rgba(0, 40, 112, 0.85); padding: 10px 25px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.15); }
-        .bottom-bar-area button { padding: 8px 18px; font-size: 12px; font-weight: bold; cursor: pointer; background: #fff; color: #002870; border: none; border-radius: 25px; }
-        .goto-input { width: 40px; padding: 3px 5px; border-radius: 5px; border: 1px solid rgba(255,255,255,0.3); background: rgba(0,0,0,0.4); color: #fff; text-align: center; }
-        .hint { font-size: 12px; color: #ffffff; font-weight: 500; }
+        /* PREMIUM GEÇİŞ OKLARI */
+        .nav-overlay-zone {
+            position: absolute;
+            top: 0; height: 100%; width: 100px;
+            z-index: 9999 !important;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .nav-overlay-zone.left-zone { left: 0; }
+        .nav-overlay-zone.right-zone { right: 0; }
+
+        .arrow-btn {
+            width: 50px; height: 50px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; font-size: 20px; cursor: pointer;
+            opacity: 0.35; transition: all 0.25s ease-in-out;
+            backdrop-filter: blur(5px);
+            user-select: none;
+        }
+        .nav-overlay-zone:hover { cursor: pointer; }
+        .nav-overlay-zone:hover .arrow-btn { opacity: 0.75; background: rgba(0, 0, 0, 0.7); }
+        .arrow-btn:hover {
+            opacity: 1 !important; transform: scale(1.1);
+            background: #ffffff !important; color: #000000 !important;
+            box-shadow: 0 0 20px rgba(255,255,255,0.6);
+        }
+        
+        /* SAĞ PANEL: SLAYT ŞERİDİ */
+        .sidebar-thumbnails {
+            width: 200px;
+            background: rgba(0, 40, 112, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 10px;
+            backdrop-filter: blur(15px);
+            z-index: 100;
+        }
+
+        .sidebar-thumbnails::-webkit-scrollbar { width: 5px; }
+        .sidebar-thumbnails::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+
+        .thumb-box {
+            position: relative; width: 92%; cursor: pointer;
+            border: 2px solid rgba(255, 255, 255, 0.2); border-radius: 6px;
+            overflow: hidden; transition: all 0.2s ease-in-out; opacity: 0.5;
+            background: rgba(255, 255, 255, 0.05); flex-shrink: 0;
+        }
+        .thumb-box:hover { opacity: 0.8; border-color: rgba(255,255,255,0.5); }
+        .thumb-box.active-thumb { border-color: #ffffff; opacity: 1; box-shadow: 0 0 12px rgba(255,255,255,0.5); }
+        .thumb-box canvas { width: 100% !important; height: auto !important; display: block; }
+
+        .thumb-label {
+            position: absolute; bottom: 4px; right: 6px;
+            background: rgba(0,0,0,0.8); color: #fff; font-size: 10px;
+            font-weight: bold; padding: 1px 5px; border-radius: 3px;
+        }
+        
+        /* ALT PANEL */
+        .bottom-bar-area {
+            width: 100%; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 6px;
+            padding-top: 10px; flex-shrink: 0; z-index: 100;
+        }
+
+        .controls {
+            display: flex; align-items: center; gap: 15px; 
+            background: rgba(0, 40, 112, 0.85); padding: 10px 25px; border-radius: 50px;
+            backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.15);
+            box-shadow: 0 10px 35px rgba(0,0,0,0.6);
+        }
+        
+        .bottom-bar-area button {
+            padding: 8px 18px; font-size: 12px; font-weight: bold; cursor: pointer;
+            background: #fff; color: #002870; border: none; border-radius: 25px;
+            transition: all 0.2s;
+        }
+        .bottom-bar-area button:hover { background: #e5e5e5; }
+        .bottom-bar-area button:disabled { opacity: 0.2; cursor: not-allowed; }
+        
+        .goto-container { display: flex; align-items: center; gap: 5px; font-size: 13px; }
+        .goto-input {
+            width: 40px; padding: 3px 5px; border-radius: 5px;
+            border: 1px solid rgba(255,255,255,0.3); background: rgba(0,0,0,0.4);
+            color: #fff; text-align: center; font-weight: bold;
+        }
+        #pageIndicator { color: #ffffff; }
+        
+        .hint { 
+            font-size: 12px; 
+            color: #ffffff !important; 
+            font-weight: 500;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8); 
+        }
     </style>
 </head>
 <body>
 
-    <div id="globalLoading">Yataş Group Price Catalogues are loading..</div>
+    <div id="globalLoading">Yataş Group Deck Engine is launching...</div>
     
     <div class="portal-wrapper">
+        
+        <!-- SOL BANNER -->
         <div class="sidebar-nav">
-            <div class="logo-container"><img src="image_26c641.png" alt="Yataş Grup Logo"></div>
-            <div class="brand-subtitle">Corporate Prıce Lısts</div>
+            <div class="logo-container">
+                <img src="image_26c641.png" alt="Yataş Grup Logo">
+            </div>
+            <div class="brand-subtitle">Corporate Deck Portal</div>
             
+            <!-- 1. ANA BAŞLIK: CATALOGUES -->
             <div class="menu-section-title">Catalogues</div>
             <ul class="deck-list" id="cataloguesList"></ul>
 
-            <div class="menu-section-title">Download Lınks</div>
-            <ul class="deck-list" id="downloadlinks"></ul>
+            <!-- 2. ANA BAŞLIK: DOWNLOAD LINKS -->
+            <div class="menu-section-title">Download Links</div>
+            <ul class="deck-list" id="otherList"></ul>
         </div>
 
+        <!-- WORKSPACE -->
         <div class="workspace">
             <div class="main-container" id="mainContainer">
                 <div class="scene" id="scene">
+                    
                     <div id="zoomContainer" class="pan-zoom-container">
                         <div id="book" class="book"></div>
                     </div>
-                    <div class="nav-overlay-zone left-zone" id="zoneLeft"><div class="arrow-btn" id="overlayPrevBtn">&#10094;</div></div>
-                    <div class="nav-overlay-zone right-zone" id="zoneRight"><div class="arrow-btn" id="overlayNextBtn">&#10095;</div></div>
+
+                    <div class="nav-overlay-zone left-zone" id="zoneLeft">
+                        <div class="arrow-btn" id="overlayPrevBtn">&#10094;</div>
+                    </div>
+
+                    <div class="nav-overlay-zone right-zone" id="zoneRight">
+                        <div class="arrow-btn" id="overlayNextBtn">&#10095;</div>
+                    </div>
+
                 </div>
+
                 <div class="sidebar-thumbnails" id="sidebarThumbnails"></div>
             </div>
 
-            <div class="bottom-bar-area">
+            <!-- KONTROLLER -->
+            <div class="bottom-bar-area" id="bottomBarArea">
                 <div class="controls">
                     <button id="prevBtn" disabled>◀ Previous</button>
                     <div class="goto-container">
@@ -173,61 +370,93 @@
                 <div class="hint">Use your mouse wheel to zoom in/out on the slide area.</div>
             </div>
         </div>
+
     </div>
 
     <script>
+        // Buradaki linkleri ve PDF adlarını dilediğin gibi değiştirebilirsin abi.
         const presentationData = {
             catalogues: [
-                { title: "Yataş Bedding July 2026 USD", url: "BEDDING_JULY2026_DOLAR_HIGH.pdf" },
-                { title: "Yataş Bedding July 2026 EUR", url: "BEDDING_JULY2026_EURO_HIGH.pdf" },
+                { title: "Enza Home", url: "Enza Home.pdf" },
+                { title: "Yataş Bedding", url: "Yataş Bedding.pdf" },
             ],
-            downloadlinks: [
-                { title: "Yataş Bedding July 2026 USD", url: "https://we.tl/t-hHbsYtkAQv63LRYm" },
-		{ title: "Yataş Bedding July 2026 EUR", url: "https://we.tl/t-xABOnqmf2pMj3dhK" }
+            downloadLinks: [
+                { title: "Catalog 2026", url: "https://www.yatasgrup.com/downloads/katalog.pdf", isLink: true },
+                { title: "Dealer Portal", url: "https://bayi.yatasgrup.com", isLink: true },
+                { title: "Product Specs", url: "https://specs.yatasgrup.com", isLink: true }
             ]
         };
 
-        const presentations = [...presentationData.catalogues, ...presentationData.downloadlinks];
+        const presentations = [...presentationData.catalogues, ...presentationData.downloadLinks];
+
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
-        let currentId = 0, pages = [], thumbElements = [], pdfDoc = null;
-        let scale = 1, posX = 0, posY = 0, isDragging = false, startX, startY;
+        let currentId = 0; 
+        let pages = [];
+        let thumbElements = [];
+        let pdfDoc = null;
+        
+        let scale = 1; let posX = 0; let posY = 0;
+        let isDragging = false; let startX; let startY;
 
-        const zoomContainer = document.getElementById('zoomContainer'), book = document.getElementById('book'), scene = document.getElementById('scene'), sidebarThumbnails = document.getElementById('sidebarThumbnails'), gotoInput = document.getElementById('gotoInput'), cataloguesList = document.getElementById('cataloguesList'), downloadlinks = document.getElementById('downloadlinks'), globalLoading = document.getElementById('globalLoading');
+        const zoomContainer = document.getElementById('zoomContainer');
+        const book = document.getElementById('book');
+        const scene = document.getElementById('scene');
+        const sidebarThumbnails = document.getElementById('sidebarThumbnails');
+        const gotoInput = document.getElementById('gotoInput');
+        const cataloguesList = document.getElementById('cataloguesList');
+        const otherList = document.getElementById('otherList');
+        const globalLoading = document.getElementById('globalLoading');
 
         function buildSidebarMenu() {
             cataloguesList.innerHTML = "";
-            downloadlinks.innerHTML = "";
+            otherList.innerHTML = "";
 
-            presentationData.catalogues.forEach((deck, idx) => {
+            let globalIdx = 0;
+
+            presentationData.catalogues.forEach((deck) => {
+                const currentIdx = globalIdx;
                 const li = document.createElement('li');
                 const btn = document.createElement('button');
-                btn.className = `deck-btn ${idx === 0 ? 'active-deck' : ''}`;
+                btn.className = `deck-btn ${currentIdx === 0 ? 'active-deck' : ''}`;
                 btn.innerText = deck.title;
-                btn.addEventListener('click', () => switchPresentation(idx));
+                btn.setAttribute('data-index', currentIdx);
+                btn.addEventListener('click', () => switchPresentation(currentIdx));
                 li.appendChild(btn);
                 cataloguesList.appendChild(li);
+                globalIdx++;
             });
 
-            presentationData.downloadlinks.forEach((deck) => {
+            presentationData.downloadLinks.forEach((deck) => {
+                const currentIdx = globalIdx;
                 const li = document.createElement('li');
-                const btn = document.createElement('a');
-                btn.className = 'deck-btn';
+                const btn = document.createElement('button');
+                btn.className = `deck-btn`;
                 btn.innerText = deck.title;
-                btn.href = deck.url;
-                btn.setAttribute('download', '');
-                btn.style.textDecoration = 'none';
+                btn.setAttribute('data-index', currentIdx);
+                btn.addEventListener('click', () => switchPresentation(currentIdx));
                 li.appendChild(btn);
-                downloadlinks.appendChild(li);
+                otherList.appendChild(li);
+                globalIdx++;
             });
         }
 
         async function switchPresentation(index) {
-            const buttons = document.querySelectorAll('#cataloguesList .deck-btn');
-            buttons.forEach((b, i) => b.classList.toggle('active-deck', i === index));
+            const item = presentations[index];
+
+            if (item.isLink) {
+                window.open(item.url, '_blank');
+                return;
+            }
+
+            const buttons = document.querySelectorAll('.deck-btn');
+            buttons.forEach(b => {
+                const bIdx = parseInt(b.getAttribute('data-index'));
+                b.classList.toggle('active-deck', bIdx === index);
+            });
 
             globalLoading.style.display = 'flex';
-            globalLoading.innerText = `Loading "${presentationData.catalogues[index].title}"...`;
+            globalLoading.innerText = `Loading "${item.title}"...`;
 
             book.innerHTML = '';
             sidebarThumbnails.innerHTML = '';
@@ -236,30 +465,39 @@
             currentId = 0;
             resetZoom();
 
-            await loadPDF(presentationData.catalogues[index].url);
+            await loadPDF(item.url);
         }
 
         function resizeBookToFit(viewport) {
-            const sceneW = scene.clientWidth, sceneH = scene.clientHeight;
-            const idealScale = Math.min((sceneW * 0.94) / viewport.width, (sceneH * 0.90) / viewport.height);
+            const sceneW = scene.clientWidth;
+            const sceneH = scene.clientHeight;
+            const scaleX = (sceneW * 0.94) / viewport.width;
+            const scaleY = (sceneH * 0.90) / viewport.height;
+            const idealScale = Math.min(scaleX, scaleY);
             book.style.width = Math.floor(viewport.width * idealScale) + 'px';
             book.style.height = Math.floor(viewport.height * idealScale) + 'px';
         }
 
-        async function renderPage(pageNum) {
+        async function renderPage(pageNum, totalPages) {
             try {
                 const page = await pdfDoc.getPage(pageNum);
                 const viewport = page.getViewport({ scale: 2.0 });
+
                 const pageDiv = document.createElement('div');
                 pageDiv.className = 'page';
+                
                 const canvas = document.createElement('canvas');
                 const context = canvas.getContext('2d');
                 canvas.height = viewport.height; canvas.width = viewport.width;
+
                 pageDiv.appendChild(canvas);
                 book.appendChild(pageDiv);
+
+                const renderTask = page.render({ canvasContext: context, viewport: viewport });
+                pageDiv.pdfViewport = page.getViewport({ scale: 1.0 }); 
                 pages[pageNum - 1] = pageDiv;
-                pageDiv.pdfViewport = page.getViewport({ scale: 1.0 });
-                await page.render({ canvasContext: context, viewport: viewport }).promise;
+
+                await renderTask.promise;
                 updateBookDisplay();
             } catch (err) { console.error(err); }
         }
@@ -267,52 +505,139 @@
         async function renderThumbnail(pageNum) {
             try {
                 const page = await pdfDoc.getPage(pageNum);
-                const viewport = page.getViewport({ scale: 0.35 });
+                const viewport = page.getViewport({ scale: 0.35 }); 
+
                 const thumbBox = document.createElement('div');
                 thumbBox.className = 'thumb-box';
+                
                 const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
                 canvas.height = viewport.height; canvas.width = viewport.width;
                 thumbBox.appendChild(canvas);
+
                 const label = document.createElement('div');
                 label.className = 'thumb-label'; label.innerText = pageNum;
                 thumbBox.appendChild(label);
+
                 sidebarThumbnails.appendChild(thumbBox);
                 thumbElements[pageNum - 1] = thumbBox;
-                thumbBox.addEventListener('click', () => { currentId = pageNum - 1; resetZoom(); updateBookDisplay(); });
-                await page.render({ canvasContext: canvas.getContext('2d'), viewport: viewport }).promise;
+
+                thumbBox.addEventListener('click', () => {
+                    currentId = pageNum - 1;
+                    resetZoom();
+                    updateBookDisplay();
+                });
+
+                await page.render({ canvasContext: context, viewport: viewport }).promise;
             } catch (err) { console.error(err); }
         }
 
         async function loadPDF(url) {
             try {
                 pdfDoc = await pdfjsLib.getDocument(url).promise;
-                pages = new Array(pdfDoc.numPages);
-                thumbElements = new Array(pdfDoc.numPages);
-                await renderPage(1);
+                const totalPages = pdfDoc.numPages;
+                pages = new Array(totalPages);
+                thumbElements = new Array(totalPages);
+
+                const firstBatch = Math.min(3, totalPages);
+                for (let pageNum = 1; pageNum <= firstBatch; pageNum++) {
+                    await renderPage(pageNum, totalPages);
+                }
+
                 globalLoading.style.display = 'none';
                 zoomContainer.style.display = 'block';
-                for (let i = 1; i <= pdfDoc.numPages; i++) { renderPage(i); renderThumbnail(i); }
-            } catch (err) { globalLoading.innerText = "Error loading PDF."; console.error(err); }
+                updateBookDisplay();
+
+                for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
+                    renderThumbnail(pageNum).then(() => {
+                        if (pageNum - 1 === currentId && thumbElements[currentId]) {
+                            thumbElements[currentId].classList.add('active-thumb');
+                        }
+                    });
+                    if (pageNum > 3) { renderPage(pageNum, totalPages); }
+                }
+            } catch (error) {
+                globalLoading.style.display = 'flex';
+                globalLoading.innerText = "Error loading PDF file. Please check file paths.";
+                console.error(error);
+            }
         }
 
         function updateBookDisplay() {
-            pages.forEach((p, i) => p && p.classList.toggle('active-page', i === currentId));
-            thumbElements.forEach((t, i) => t && t.classList.toggle('active-thumb', i === currentId));
+            const total = pages.length;
+            if (total === 0) return;
+
+            pages.forEach((page, index) => {
+                if (!page) return;
+                if (index === currentId) {
+                    page.classList.add('active-page');
+                    resizeBookToFit(page.pdfViewport);
+                } else { page.classList.remove('active-page'); }
+            });
+
+            thumbElements.forEach((thumb, index) => {
+                if (!thumb) return;
+                if (index === currentId) {
+                    thumb.classList.add('active-thumb');
+                    thumb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                } else { thumb.classList.remove('active-thumb'); }
+            });
+
             document.getElementById('prevBtn').disabled = (currentId === 0);
-            document.getElementById('nextBtn').disabled = (currentId >= pages.length - 1);
+            document.getElementById('nextBtn').disabled = (currentId >= total - 1);
             gotoInput.value = currentId + 1;
-            document.getElementById('pageIndicator').innerText = `/ ${pages.length}`;
+            document.getElementById('pageIndicator').innerText = `/ ${total}`;
         }
 
-        function flipNext() { if (currentId < pages.length - 1) { currentId++; resetZoom(); updateBookDisplay(); } }
-        function flipPrev() { if (currentId > 0) { currentId--; resetZoom(); updateBookDisplay(); } }
-        function resetZoom() { scale = 1; posX = 0; posY = 0; zoomContainer.style.transform = `translate(0,0) scale(1)`; }
-        
-        scene.addEventListener('wheel', (e) => { e.preventDefault(); scale = e.deltaY < 0 ? Math.min(scale + 0.2, 5) : Math.max(scale - 0.2, 1); zoomContainer.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`; });
+        function flipNext() { if (currentId < pages.length - 1 && pages[currentId + 1]) { currentId++; resetZoom(); updateBookDisplay(); } }
+        function flipPrev() { if (currentId > 0 && pages[currentId - 1]) { currentId--; resetZoom(); updateBookDisplay(); } }
+        function resetZoom() { scale = 1; posX = 0; posY = 0; updateTransform(); }
+        function updateTransform() { zoomContainer.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`; }
+
+        document.getElementById('zoneLeft').addEventListener('click', (e) => { if (scale > 1) return; e.stopPropagation(); flipPrev(); });
+        document.getElementById('zoneRight').addEventListener('click', (e) => { if (scale > 1) return; e.stopPropagation(); flipNext(); });
+
+        gotoInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                let targetPage = parseInt(gotoInput.value);
+                if (!isNaN(targetPage) && targetPage >= 1 && targetPage <= pages.length) {
+                    currentId = targetPage - 1; resetZoom(); updateBookDisplay(); gotoInput.blur();
+                } else { gotoInput.value = currentId + 1; }
+            }
+        });
+
+        scene.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            if (e.deltaY < 0) { scale = Math.min(scale + 0.2, 5); } else { scale = Math.max(scale - 0.2, 1); }
+            if (scale === 1) { posX = 0; posY = 0; }
+            updateTransform();
+        });
+
+        scene.addEventListener('mousedown', (e) => {
+            if (scale === 1 || e.target.closest('.nav-overlay-zone')) return;
+            isDragging = true; startX = e.clientX - posX; startY = e.clientY - posY;
+        });
+
+        window.addEventListener('mousemove', (e) => { if (!isDragging) return; posX = e.clientX - startX; posY = e.clientY - startY; updateTransform(); });
+        window.addEventListener('mouseup', () => { isDragging = false; });
+
+        document.getElementById('zoomInBtn').addEventListener('click', () => { scale = Math.min(scale + 0.5, 5); updateTransform(); });
+        document.getElementById('zoomOutBtn').addEventListener('click', () => { scale = Math.max(scale - 0.5, 1); if(scale===1){posX=0;posY=0;} updateTransform(); });
         document.getElementById('nextBtn').addEventListener('click', flipNext);
         document.getElementById('prevBtn').addEventListener('click', flipPrev);
-        
-        window.onload = () => { buildSidebarMenu(); loadPDF(presentationData.catalogues[0].url); };
+
+        window.addEventListener('keydown', (e) => {
+            if (e.target.tagName === 'INPUT') return; 
+            if (e.key === "ArrowRight" || e.key === " ") flipNext();
+            if (e.key === "ArrowLeft") flipPrev();
+        });
+
+        window.addEventListener('resize', () => { if (pages[currentId]) updateBookDisplay(); });
+
+        window.onload = () => {
+            buildSidebarMenu();
+            loadPDF(presentations[0].url);
+        };
     </script>
 </body>
 </html>
