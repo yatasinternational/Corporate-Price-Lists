@@ -443,7 +443,7 @@
             opacity: 1;
         }
 
-        /* FOCUS MODE AKTİF OLDUĞUNDA SIFIRLANAN BOYUTLAR - ULTRA GENİŞLİK SAĞLANDI */
+        /* FOCUS MODE AKTİF OLDUĞUNDA SIFIRLANAN BOYUTLAR */
         .focus-mode-on .sidebar-nav { width: 0px !important; padding: 0px !important; border: none !important; opacity: 0; pointer-events: none; }
         .focus-mode-on .sidebar-thumbnails { width: 0px !important; padding: 0px !important; border: none !important; opacity: 0; pointer-events: none; }
         .focus-mode-on .bottom-bar-area { transform: translateY(150px); opacity: 0; pointer-events: none; }
@@ -556,7 +556,6 @@
         let isSoundOn = true;
         let pageRenderingStates = {}; 
 
-        // SES DOSYASI INTEGRASYONU (KLASÖRDEKİ DOSYAYI DOĞRUDAN OKUR)
         const transitionSound = new Audio('glossy_magazine.mp3');
 
         const zoomContainer = document.getElementById('zoomContainer');
@@ -568,13 +567,11 @@
         const downloadList = document.getElementById('downloadList');
         const globalLoading = document.getElementById('globalLoading');
 
-        // GÜVENLİ SES KİLİDİ AÇMA (USER INTERACTION UNLOCK)
         function unlockAudioEngine() {
             transitionSound.play().then(() => {
                 transitionSound.pause();
                 transitionSound.currentTime = 0;
-                console.log("Audio Engine Unlocked Successfully.");
-            }).catch(e => console.log('Audio engine waiting for active interaction.'));
+            }).catch(e => console.log('Audio engine setup.'));
             window.removeEventListener('click', unlockAudioEngine);
             window.removeEventListener('keydown', unlockAudioEngine);
         }
@@ -586,7 +583,7 @@
             try {
                 transitionSound.currentTime = 0;
                 transitionSound.play();
-            } catch (e) { console.log("Audio waiting for active click interaction."); }
+            } catch (e) { console.log("Audio trigger context check."); }
         }
 
         function injectWatermark(context, width, height) {
@@ -684,10 +681,10 @@
         }
 
         function resizeBookToFit(viewport) {
+            if (!viewport) return;
             const sceneW = scene.clientWidth;
             const sceneH = scene.clientHeight;
             
-            // ELİ KORKAK ALIŞTIRMADIK: Focus Mode %99, normal modda %95 dolduracak şekilde esnetildi
             const multiplierW = document.body.classList.contains('focus-mode-on') ? 0.99 : 0.95;
             const multiplierH = document.body.classList.contains('focus-mode-on') ? 0.99 : 0.92;
             
@@ -698,6 +695,7 @@
             book.style.height = Math.floor(viewport.height * idealScale) + 'px';
         }
 
+        // HİBRİT ÖNBELLEK VE ANINDA GÖRÜNTÜ OLUŞTURMA SİSTEMİ
         async function optimizeAndRenderPage(pageNum) {
             if (pageNum < 1 || pageNum > pdfDoc.numPages) return;
             if (pageRenderingStates[pageNum] === 'high-res') return;
@@ -720,8 +718,21 @@
 
                 const canvas = pageDiv.querySelector('canvas');
                 const context = canvas.getContext('2d');
-                const viewport = page.getViewport({ scale: renderScale });
+                
+                // [DEĞİŞİKLİK] EĞER SAYFA HENÜZ ÇİZİLMEDİYSE AMA SAĞDAKİ THUMBNAIL ÇİZİLDİYSE, ANINDA ÖNİZLEMEYİ KOPYALA (SIFIR BEKLEME)
+                const sourceThumbBox = document.getElementById(`thumb-box-${pageNum}`);
+                if (sourceThumbBox && !pageRenderingStates[pageNum]) {
+                    const thumbCanvas = sourceThumbBox.querySelector('canvas');
+                    if (thumbCanvas && thumbCanvas.width > 0) {
+                        canvas.width = thumbCanvas.width;
+                        canvas.height = thumbCanvas.height;
+                        context.drawImage(thumbCanvas, 0, 0);
+                        pageDiv.pdfViewport = page.getViewport({ scale: 1.0 });
+                        if (pageNum - 1 === currentId) updateBookDisplay();
+                    }
+                }
 
+                const viewport = page.getViewport({ scale: renderScale });
                 canvas.height = viewport.height;
                 canvas.width = viewport.width;
 
@@ -775,11 +786,16 @@
                 thumbElements[i - 1] = thumbBox;
 
                 thumbBox.addEventListener('click', () => {
+                    if (currentId === i - 1) return;
                     playPaperSound();
                     currentId = i - 1;
                     localStorage.setItem('yatas_last_page', currentId);
                     resetZoom();
+                    
+                    // [YENİLİK] Tıklanır tıklanmaz önce önizlemeyi ekrana basar, sonra yüksek çözünürlüğü işler
+                    optimizeAndRenderPage(i); 
                     updateBookDisplay();
+                    runPredictiveCachePipeline();
                 });
             }
         }
@@ -787,7 +803,7 @@
         async function renderThumbnail(pageNum) {
             try {
                 const page = await pdfDoc.getPage(pageNum);
-                const viewport = page.getViewport({ scale: 0.30 }); 
+                const viewport = page.getViewport({ scale: 0.35 }); 
 
                 const thumbBox = document.getElementById(`thumb-box-${pageNum}`);
                 if (!thumbBox) return;
@@ -809,21 +825,23 @@
 
                 createSequentialThumbContainers(totalPages);
 
+                // İlk yüklemede sağdaki önizlemelerin hızlıca oluşması için asenkron kuyruk başlatılır
+                const thumbPromises = [];
+                for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
+                    thumbPromises.push(renderThumbnail(pageNum));
+                }
+                await Promise.all(thumbPromises);
+
                 const startRenderPage = currentId + 1;
                 await optimizeAndRenderPage(startRenderPage);
 
                 globalLoading.style.display = 'none';
                 zoomContainer.style.display = 'block';
                 updateBookDisplay();
-
                 runPredictiveCachePipeline();
 
-                for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
-                    renderThumbnail(pageNum).then(() => {
-                        if (pageNum - 1 === currentId && thumbElements[currentId]) {
-                            thumbElements[currentId].classList.add('active-thumb');
-                        }
-                    });
+                if (thumbElements[currentId]) {
+                    thumbElements[currentId].classList.add('active-thumb');
                 }
             } catch (error) {
                 globalLoading.style.display = 'flex';
@@ -877,8 +895,9 @@
                 currentId++; 
                 localStorage.setItem('yatas_last_page', currentId);
                 resetZoom(); 
-                runPredictiveCachePipeline();
+                optimizeAndRenderPage(currentId + 1);
                 updateBookDisplay(); 
+                runPredictiveCachePipeline();
             } 
         }
         
@@ -888,8 +907,9 @@
                 currentId--; 
                 localStorage.setItem('yatas_last_page', currentId);
                 resetZoom(); 
-                runPredictiveCachePipeline();
+                optimizeAndRenderPage(currentId + 1);
                 updateBookDisplay(); 
+                runPredictiveCachePipeline();
             } 
         }
         
@@ -907,8 +927,9 @@
                     currentId = targetPage - 1; 
                     localStorage.setItem('yatas_last_page', currentId);
                     resetZoom(); 
-                    runPredictiveCachePipeline();
+                    optimizeAndRenderPage(targetPage);
                     updateBookDisplay(); 
+                    runPredictiveCachePipeline();
                     gotoInput.blur();
                 } else { gotoInput.value = currentId + 1; }
             }
