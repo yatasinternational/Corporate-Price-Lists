@@ -37,7 +37,6 @@
             gap: 20px;
         }
 
-        /* Ritmik Kalp Atışı Yapan Beyaz Logo Kutusu */
         .loading-pulse-logo {
             width: 180px;
             height: auto;
@@ -62,21 +61,21 @@
             width: 100vw;
             height: 100vh;
             overflow: hidden;
-            transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
         /* FOCUS MODE AKTİF LOGO */
         #focusLogo {
             position: fixed;
-            top: 25px;
-            left: 30px;
-            width: 130px;
+            top: 20px;
+            left: 20px;
+            width: 120px;
             height: auto;
             z-index: 10002;
             display: none;
-            opacity: 0.85;
+            opacity: 0.8;
             background: #ffffff;
-            padding: 8px 12px;
+            padding: 6px 10px;
             border-radius: 4px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
             transition: opacity 0.3s;
@@ -94,7 +93,7 @@
             box-shadow: 5px 0 25px rgba(0,0,0,0.5);
             z-index: 200;
             overflow-y: auto;
-            transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
             flex-shrink: 0;
         }
 
@@ -201,7 +200,7 @@
             padding: 15px 0;
             position: relative;
             background: rgba(7, 13, 34, 0.35);
-            transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
         .main-container {
@@ -210,7 +209,7 @@
             flex: 1;
             overflow: hidden;
             gap: 15px;
-            transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
         }
         
         .scene {
@@ -326,7 +325,7 @@
             padding: 15px 10px;
             backdrop-filter: blur(15px);
             z-index: 100;
-            transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
             flex-shrink: 0;
         }
 
@@ -354,7 +353,7 @@
             width: 100%; display: flex; flex-direction: column;
             align-items: center; justify-content: center; gap: 6px;
             padding-top: 10px; flex-shrink: 0; z-index: 100;
-            transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
         .controls {
@@ -444,21 +443,22 @@
             opacity: 1;
         }
 
-        /* FOCUS MODE AKTİF OLDUĞUNDA SIFIRLANAN BOYUTLAR */
+        /* FOCUS MODE AKTİF OLDUĞUNDA SIFIRLANAN BOYUTLAR - ULTRA GENİŞLİK SAĞLANDI */
         .focus-mode-on .sidebar-nav { width: 0px !important; padding: 0px !important; border: none !important; opacity: 0; pointer-events: none; }
         .focus-mode-on .sidebar-thumbnails { width: 0px !important; padding: 0px !important; border: none !important; opacity: 0; pointer-events: none; }
         .focus-mode-on .bottom-bar-area { transform: translateY(150px); opacity: 0; pointer-events: none; }
         .focus-mode-on #focusLogo { display: block; }
         .focus-mode-on .main-container { width: 100% !important; gap: 0px !important; }
+        .focus-mode-on .workspace { padding: 0px !important; background: transparent !important; }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
-    <!-- YENİ ENTEGRE EDİLEN KALP ATIŞI VE KURUMSAL ARKA PLANLI LOADING EKRANI -->
+    <!-- KALP ATIŞI VE KURUMSAL ARKA PLANLI LOADING EKRANI -->
     <div id="globalLoading">
-        <img src="image_26c41.png" alt="Yataş Group" class="loading-pulse-logo">
+        <img src="yatas_grup_logo.png" alt="Yataş Group" class="loading-pulse-logo">
     </div>
     
     <!-- PREMIUM TOP ACTION BAR -->
@@ -471,14 +471,14 @@
     <div id="resumeToast">Welcome back! You're being redirected to your last viewed page.</div>
     
     <!-- FOCUS MODE AKTİF LOGO -->
-    <img id="focusLogo" src="image_26c41.png" alt="Yataş Group Logo">
+    <img id="focusLogo" src="yatas_grup_logo.png" alt="Yataş Group Logo">
     
     <div class="portal-wrapper" id="portalWrapper">
         
         <!-- SOL BANNER -->
         <div class="sidebar-nav" id="sidebarNav">
             <div class="logo-container">
-                <img src="image_26c41.png" alt="Yataş Grup Logo">
+                <img src="yatas_grup_logo.png" alt="Yataş Grup Logo">
             </div>
             <div class="brand-subtitle">yataş ınternatıonal</div>
             
@@ -556,6 +556,7 @@
         let isSoundOn = true;
         let pageRenderingStates = {}; 
 
+        // SES DOSYASI INTEGRASYONU (KLASÖRDEKİ DOSYAYI DOĞRUDAN OKUR)
         const transitionSound = new Audio('glossy_magazine.mp3');
 
         const zoomContainer = document.getElementById('zoomContainer');
@@ -567,23 +568,25 @@
         const downloadList = document.getElementById('downloadList');
         const globalLoading = document.getElementById('globalLoading');
 
-        function unlockAudio() {
+        // GÜVENLİ SES KİLİDİ AÇMA (USER INTERACTION UNLOCK)
+        function unlockAudioEngine() {
             transitionSound.play().then(() => {
                 transitionSound.pause();
                 transitionSound.currentTime = 0;
-            }).catch(e => console.log('Audio init waiting...'));
-            window.removeEventListener('click', unlockAudio);
-            window.removeEventListener('keydown', unlockAudio);
+                console.log("Audio Engine Unlocked Successfully.");
+            }).catch(e => console.log('Audio engine waiting for active interaction.'));
+            window.removeEventListener('click', unlockAudioEngine);
+            window.removeEventListener('keydown', unlockAudioEngine);
         }
-        window.addEventListener('click', unlockAudio);
-        window.addEventListener('keydown', unlockAudio);
+        window.addEventListener('click', unlockAudioEngine);
+        window.addEventListener('keydown', unlockAudioEngine);
 
         function playPaperSound() {
             if (!isSoundOn) return;
             try {
                 transitionSound.currentTime = 0;
                 transitionSound.play();
-            } catch (e) { console.log("Audio waiting for user gesture."); }
+            } catch (e) { console.log("Audio waiting for active click interaction."); }
         }
 
         function injectWatermark(context, width, height) {
@@ -608,7 +611,7 @@
                     resetZoom();
                     updateBookDisplay();
                 }
-            }, 510);
+            }, 450);
         });
 
         document.getElementById('audioToggleBtn').addEventListener('click', function() {
@@ -665,7 +668,6 @@
                 b.classList.toggle('active-deck', bIdx === index);
             });
 
-            // Loading durumunda text yazıp logoyu bozmuyoruz, sadece ekranı açıyoruz
             const errorMsg = document.getElementById('loadingErrorMsg');
             if(errorMsg) errorMsg.remove();
             globalLoading.style.display = 'flex';
@@ -684,8 +686,10 @@
         function resizeBookToFit(viewport) {
             const sceneW = scene.clientWidth;
             const sceneH = scene.clientHeight;
-            const multiplierW = document.body.classList.contains('focus-mode-on') ? 0.98 : 0.94;
-            const multiplierH = document.body.classList.contains('focus-mode-on') ? 0.96 : 0.90;
+            
+            // ELİ KORKAK ALIŞTIRMADIK: Focus Mode %99, normal modda %95 dolduracak şekilde esnetildi
+            const multiplierW = document.body.classList.contains('focus-mode-on') ? 0.99 : 0.95;
+            const multiplierH = document.body.classList.contains('focus-mode-on') ? 0.99 : 0.92;
             
             const scaleX = (sceneW * multiplierW) / viewport.width;
             const scaleY = (sceneH * multiplierH) / viewport.height;
