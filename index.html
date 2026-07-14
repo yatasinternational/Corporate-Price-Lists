@@ -18,7 +18,7 @@
             font-family: 'Segoe UI', Arial, sans-serif;
             overflow: hidden;
             color: #fff;
-            perspective: 1500px; /* 3D Sayfa geçiş efekti için */
+            perspective: 2000px; /* 3D derinlik artırıldı */
         }
         
         #globalLoading { 
@@ -35,27 +35,28 @@
             transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
-        /* PREMIUM FOCUS MODE LOGO ELEMENTI */
+        /* FOCUS MODE AKTİF LOGO */
         #focusLogo {
             position: fixed;
             top: 25px;
             left: 30px;
-            font-size: 14px;
-            font-weight: bold;
-            letter-spacing: 3px;
-            color: rgba(255, 255, 255, 0.8);
-            z-index: 500;
+            width: 120px;
+            height: auto;
+            z-index: 10002;
             display: none;
-            text-transform: uppercase;
-            border-left: 3px solid #fff;
-            padding-left: 10px;
-            animate: fadeIn 0.5s ease;
+            opacity: 0.7;
+            background: #ffffff;
+            padding: 8px 12px;
+            border-radius: 4px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: opacity 0.3s;
         }
+        #focusLogo:hover { opacity: 1; }
 
-        /* SOL PANEL: YATAŞ KURUMSAL BANNER */
+        /* SOL PANEL */
         .sidebar-nav {
             width: 320px;
-            background: #002870; /* Yataş Kurumsal Lacivert */
+            background: #002870; 
             border-right: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
             flex-direction: column;
@@ -63,7 +64,8 @@
             box-shadow: 5px 0 25px rgba(0,0,0,0.5);
             z-index: 200;
             overflow-y: auto;
-            transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s ease;
+            transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+            flex-shrink: 0;
         }
 
         .sidebar-nav::-webkit-scrollbar { width: 4px; }
@@ -99,7 +101,7 @@
             flex-shrink: 0;
         }
 
-        /* SMART SEARCH INPUT (iOS SPOTLIGHT STYLE) */
+        /* SMART SEARCH INPUT */
         .search-container {
             position: relative;
             margin-bottom: 20px;
@@ -107,8 +109,8 @@
         }
         .search-input {
             width: 100%;
-            padding: 10px 15px;
-            background: rgba(0, 0, 0, 0.2);
+            padding: 12px 15px;
+            background: rgba(0, 0, 0, 0.25);
             border: 1px solid rgba(255,255,255,0.2);
             border-radius: 20px;
             color: #fff;
@@ -117,7 +119,7 @@
             transition: all 0.3s;
         }
         .search-input:focus {
-            background: rgba(0, 0, 0, 0.4);
+            background: rgba(0, 0, 0, 0.45);
             border-color: rgba(255,255,255,0.6);
             box-shadow: 0 0 10px rgba(255,255,255,0.1);
         }
@@ -182,7 +184,7 @@
             color: #002870;
         }
 
-        /* WORKSPACE */
+        /* WORKSPACE (Pürüzsüz Genişleme Özellikli) */
         .workspace {
             flex: 1;
             display: flex;
@@ -192,7 +194,7 @@
             padding: 20px 0;
             position: relative;
             background: rgba(7, 13, 34, 0.35);
-            transition: all 0.5s ease;
+            transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
         .main-container {
@@ -201,6 +203,7 @@
             flex: 1;
             overflow: hidden;
             gap: 15px;
+            transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
         }
         
         .scene {
@@ -228,8 +231,10 @@
             justify-content: center;
             align-items: center;
             transform-style: preserve-3d;
+            perspective: 2000px;
         }
         
+        /* 3D SAYFA ÇEVİRME ANİMASYONU REVIZE */
         .page {
             position: absolute;
             top: 0; left: 0;
@@ -237,24 +242,31 @@
             opacity: 0;
             display: none;
             transform-origin: left center;
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
+            transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.6s ease;
             backface-visibility: hidden;
+            box-shadow: 0 15px 45px rgba(0,0,0,0.5);
         }
         
         .page.active-page {
             display: block;
             opacity: 1;
-            transform: rotateY(0deg);
+            transform: rotateY(0deg) scale(1);
+            z-index: 5;
         }
 
-        /* 3D Page Turn Sınıfları */
         .page.turn-next {
-            transform: rotateY(-30deg) scale(0.95);
+            display: block;
             opacity: 0;
+            transform: rotateY(-75deg) scale(0.9);
+            z-index: 1;
+            pointer-events: none;
         }
         .page.turn-prev {
-            transform: rotateY(30deg) scale(0.95);
+            display: block;
             opacity: 0;
+            transform: rotateY(75deg) scale(0.9);
+            z-index: 1;
+            pointer-events: none;
         }
 
         canvas {
@@ -268,7 +280,7 @@
         /* PREMIUM GEÇİŞ OKLARI */
         .nav-overlay-zone {
             position: absolute;
-            top: 0; height: 100%; width: 100px;
+            top: 0; height: 100%; width: 120px;
             z-index: 999;
             display: flex; align-items: center; justify-content: center;
         }
@@ -308,7 +320,8 @@
             padding: 15px 10px;
             backdrop-filter: blur(15px);
             z-index: 100;
-            transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s ease;
+            transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+            flex-shrink: 0;
         }
 
         .sidebar-thumbnails::-webkit-scrollbar { width: 5px; }
@@ -335,7 +348,7 @@
             width: 100%; display: flex; flex-direction: column;
             align-items: center; justify-content: center; gap: 6px;
             padding-top: 10px; flex-shrink: 0; z-index: 100;
-            transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s ease;
+            transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
         .controls {
@@ -368,7 +381,7 @@
             text-shadow: 0 2px 4px rgba(0,0,0,0.8); 
         }
 
-        /* LIQUID GLASS FOCUS & AUDIO CONTROL BUTTONS */
+        /* ACTION BAR */
         .premium-actions {
             position: fixed;
             top: 20px;
@@ -401,7 +414,7 @@
             box-shadow: 0 0 15px rgba(255,255,255,0.5);
         }
 
-        /* AUTO RESUME ENG TOAST NOTIFICATION */
+        /* AUTO RESUME TOAST */
         #resumeToast {
             position: fixed;
             bottom: 30px;
@@ -425,11 +438,12 @@
             opacity: 1;
         }
 
-        /* FOCUS MODE ACTIVE STATE HIDERS */
-        .focus-mode-on .sidebar-nav { transform: translateX(-320px); opacity: 0; pointer-events: none; }
-        .focus-mode-on .sidebar-thumbnails { transform: translateX(200px); opacity: 0; pointer-events: none; }
+        /* FOCUS MODE AKTİF OLDUĞUNDA SIFIRLANAN BOYUTLAR */
+        .focus-mode-on .sidebar-nav { width: 0px !important; padding: 0px !important; border: none !important; opacity: 0; pointer-events: none; }
+        .focus-mode-on .sidebar-thumbnails { width: 0px !important; padding: 0px !important; border: none !important; opacity: 0; pointer-events: none; }
         .focus-mode-on .bottom-bar-area { transform: translateY(150px); opacity: 0; pointer-events: none; }
         .focus-mode-on #focusLogo { display: block; }
+        .focus-mode-on .main-container { width: 100% !important; gap: 0px !important; }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
@@ -446,27 +460,29 @@
 
     <!-- AUTO RESUME ENG TOAST -->
     <div id="resumeToast">Welcome back! You're being redirected to your last viewed page.</div>
-    <div id="focusLogo">Yataş Group</div>
+    
+    <!-- FOCUS MODE AKTİF OLDUĞUNDA GÖZÜKECEK RESMI LOGO -->
+    <img id="focusLogo" src="image_26c41.png" alt="Yataş Group Logo">
     
     <div class="portal-wrapper" id="portalWrapper">
         
-        <!-- SOL BANNER: KATEGORİZASYONLU YATAŞ MENÜSÜ -->
+        <!-- SOL BANNER -->
         <div class="sidebar-nav" id="sidebarNav">
             <div class="logo-container">
-                <img src="image_26c641.png" alt="Yataş Grup Logo">
+                <img src="image_26c41.png" alt="Yataş Grup Logo">
             </div>
             <div class="brand-subtitle">yataş ınternatıonal</div>
             
-            <!-- SMART SEARCH BAR -->
+            <!-- SMART SEARCH BAR (Çift Yönlü Arama Modülü) -->
             <div class="search-container">
-                <input type="text" id="smartSearch" class="search-input" placeholder="Search catalogues...">
+                <input type="text" id="smartSearch" class="search-input" placeholder="Search catalogues or page text...">
             </div>
 
-            <!-- 1. ANA BAŞLIK: CATALOGUES -->
+            <!-- 1. CATALOGUES -->
             <div class="menu-section-title">Catalogues</div>
             <ul class="deck-list" id="cataloguesList"></ul>
 
-            <!-- 2. ANA BAŞLIK: DOWNLOAD LINKS -->
+            <!-- 2. DOWNLOAD LINKS -->
             <div class="menu-section-title">Download Lınks</div>
             <ul class="deck-list" id="downloadList"></ul>
         </div>
@@ -534,9 +550,10 @@
         let scale = 1; let posX = 0; let posY = 0;
         let isDragging = false; let startX; let startY;
         let isSoundOn = true;
-        
-        // Hangi sayfaların render aşamasında olduğunu korumak için havuz
         let pageRenderingStates = {}; 
+
+        // GÖNDERDİĞİN LÜKS MP3 SES DOSYASI INTEGRASYONU
+        const transitionSound = new Audio('glossy_magazine.mp3');
 
         const zoomContainer = document.getElementById('zoomContainer');
         const book = document.getElementById('book');
@@ -547,34 +564,12 @@
         const downloadList = document.getElementById('downloadList');
         const globalLoading = document.getElementById('globalLoading');
 
-        // AUDIO ENGINE: Dışarıdan dosya yüklemeden premium kağıt sesi üretir
         function playPaperSound() {
             if (!isSoundOn) return;
             try {
-                const AudioContext = window.AudioContext || window.webkitAudioContext;
-                if (!AudioContext) return;
-                const ctx = new AudioContext();
-                const bufferSize = ctx.sampleRate * 0.4;
-                const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-                const data = buffer.getChannelData(0);
-                for (let i = 0; i < bufferSize; i++) {
-                    data[i] = Math.random() * 2 - 1;
-                }
-                const whiteNoise = ctx.createBufferSource();
-                whiteNoise.buffer = buffer;
-                const filter = ctx.createBiquadFilter();
-                filter.type = 'bandpass';
-                filter.frequency.setValueAtTime(1000, ctx.currentTime);
-                filter.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.3);
-                filter.Q.setValueAtTime(3, ctx.currentTime);
-                const gain = ctx.createGain();
-                gain.gain.setValueAtTime(0.08, ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
-                whiteNoise.connect(filter);
-                filter.connect(gain);
-                gain.connect(ctx.destination);
-                whiteNoise.start();
-            } catch (e) { console.log("Audio playing pending user gesture interaction."); }
+                transitionSound.currentTime = 0;
+                transitionSound.play();
+            } catch (e) { console.log("Audio waiting for interaction."); }
         }
 
         // PREMIUM WATERMARK ENGINE
@@ -585,37 +580,57 @@
             context.textAlign = "center";
             context.textBaseline = "middle";
             context.translate(width / 2, height / 2);
-            context.rotate(-Math.PI / 6); // Diagonal 30 derece açıyla basar
+            context.rotate(-Math.PI / 6);
             context.fillText("© YATAŞ GROUP - ALL RIGHTS RESERVED", 0, 0);
             context.restore();
         }
 
-        // SMART SEARCH ENGINE (iOS SPOTLIGHT)
-        document.getElementById('smartSearch').addEventListener('input', function(e) {
+        // AKILLI SÜZME & PDF İÇİ METİN ARAMA MOTORU
+        document.getElementById('smartSearch').addEventListener('input', async function(e) {
             const query = e.target.value.toLowerCase().trim();
+            if(!query) return;
+
+            // 1. Aşama: Sol taraftaki katalog listesini süz
             document.querySelectorAll('.deck-btn').forEach(btn => {
                 const text = btn.innerText.toLowerCase();
-                if(text.includes(query)) {
-                    btn.parentElement.style.display = "block";
-                } else {
-                    btn.parentElement.style.display = "none";
-                }
+                btn.parentElement.style.display = text.includes(query) ? "block" : "none";
             });
+
+            // 2. Aşama: PDF aktifse içerideki sayfalarda kelimeyi ara ve ilk eşleşen sayfaya atla
+            if (pdfDoc) {
+                for (let i = 1; i <= pdfDoc.numPages; i++) {
+                    const page = await pdfDoc.getPage(i);
+                    const textContent = await page.getTextContent();
+                    const pageText = textContent.items.map(item => item.str).join(" ").toLowerCase();
+                    
+                    if (pageText.includes(query)) {
+                        playPaperSound();
+                        currentId = i - 1;
+                        localStorage.setItem('yatas_last_page', currentId);
+                        resetZoom();
+                        runPredictiveCachePipeline();
+                        updateBookDisplay();
+                        break; // İlk eşleşen sayfayı bulduğunda aramayı durdurur
+                    }
+                }
+            }
         });
 
-        // FOCUS MODE CORE
+        // FOCUS MODE TETİKLEYİCİ - TAM BÜYÜME VE ORTALAMA GARANTİSİ
         document.getElementById('focusModeBtn').addEventListener('click', function() {
             this.classList.toggle('active');
             document.body.classList.toggle('focus-mode-on');
-            if(document.body.classList.contains('focus-mode-on')) {
-                this.innerText = "✨ Normal Mode";
-            } else {
-                this.innerText = "✨ Focus Mode";
-            }
-            setTimeout(() => { if (pages[currentId]) updateBookDisplay(); }, 550);
+            this.innerText = document.body.classList.contains('focus-mode-on') ? "✨ Normal Mode" : "✨ Focus Mode";
+
+            // Paneller kapanırken genişliğin tam oturması için geçiş süresi (500ms) sonunda boyutu tekrar hesaplatıyoruz
+            setTimeout(() => {
+                if (pages[currentId]) {
+                    resetZoom();
+                    updateBookDisplay();
+                }
+            }, 510);
         });
 
-        // AUDIO TOGGLE SWITCH
         document.getElementById('audioToggleBtn').addEventListener('click', function() {
             isSoundOn = !isSoundOn;
             this.classList.toggle('active', !isSoundOn);
@@ -662,7 +677,6 @@
             }
 
             currentActivePresentationIndex = index;
-            // Auto resume veritabanı kaydı
             localStorage.setItem('yatas_last_presentation', index);
 
             const buttons = document.querySelectorAll('.deck-btn');
@@ -695,15 +709,13 @@
             book.style.height = Math.floor(viewport.height * idealScale) + 'px';
         }
 
-        // PREDICTIVE LAZY LOADING & RENDER ENGINE (+2 / -2 MIMARISI)
+        // PREDICTIVE LAZY LOADING (+2 / -2)
         async function optimizeAndRenderPage(pageNum) {
             if (pageNum < 1 || pageNum > pdfDoc.numPages) return;
-            if (pageRenderingStates[pageNum] === 'high-res') return; // Zaten ultra kalitede hazırsa elleme
+            if (pageRenderingStates[pageNum] === 'high-res') return;
 
             try {
                 const page = await pdfDoc.getPage(pageNum);
-                
-                // Eğer sayfa o anki odağın +2/-2 alanındaysa Ultra-Res (3.0), değilse standart (1.2) render et
                 const distance = Math.abs((pageNum - 1) - currentId);
                 const isHighResTarget = distance <= 2;
                 const renderScale = isHighResTarget ? 3.0 : 1.2;
@@ -729,33 +741,27 @@
                 pageRenderingStates[pageNum] = isHighResTarget ? 'high-res' : 'low-res';
 
                 await page.render({ canvasContext: context, viewport: viewport }).promise;
-                
-                // Filigranı ultra-res katmana kusursuzca işle
                 injectWatermark(context, canvas.width, canvas.height);
 
                 if (pageNum - 1 === currentId) {
                     updateBookDisplay();
                 }
-            } catch (err) { console.error("Predictive engine execution dropped: ", err); }
+            } catch (err) { console.error(err); }
         }
 
-        // Tahmini önbellek havuzunu sürekli güncel tutan temizlik yöneticisi
         function runPredictiveCachePipeline() {
             const total = pdfDoc.numPages;
             const activeIdx = currentId + 1;
 
-            // Öncelikli olarak mevcut sayfa ve komşularını parlat
             optimizeAndRenderPage(activeIdx);
             for (let i = 1; i <= 2; i++) {
                 optimizeAndRenderPage(activeIdx + i);
                 optimizeAndRenderPage(activeIdx - i);
             }
 
-            // Bellek temizliği (Garbage Collection): Odaktan çok uzaklaşan sayfaları küçült
             for (let p = 1; p <= total; p++) {
                 if (Math.abs((p - 1) - currentId) > 3) {
                     if (pageRenderingStates[p] === 'high-res') {
-                        // Hafızayı şişirmemek adına kalitesini düşür ve havuzu rahatlat
                         pageRenderingStates[p] = 'purged'; 
                         optimizeAndRenderPage(p);
                     }
@@ -802,7 +808,6 @@
                 pages = new Array(totalPages);
                 thumbElements = new Array(totalPages);
 
-                // İlk yüklemede kullanıcının bulunduğu pencereyi anında bas
                 const startRenderPage = currentId + 1;
                 await optimizeAndRenderPage(startRenderPage);
 
@@ -810,10 +815,8 @@
                 zoomContainer.style.display = 'block';
                 updateBookDisplay();
 
-                // Arka plan işçilerini ayağa kaldır
                 runPredictiveCachePipeline();
 
-                // Küçük resimleri yükle
                 for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
                     renderThumbnail(pageNum).then(() => {
                         if (pageNum - 1 === currentId && thumbElements[currentId]) {
@@ -929,7 +932,6 @@
 
         window.addEventListener('resize', () => { if (pages[currentId]) updateBookDisplay(); });
 
-        // AUTO RESUME ENGINE TRIGGER (ENGLISH CONTROLLER)
         window.onload = () => {
             buildSidebarMenu();
             
@@ -939,7 +941,6 @@
             if (savedPresentation !== null && presentations[savedPresentation]) {
                 const targetPageIdx = savedPage !== null ? parseInt(savedPage) : 0;
                 
-                // İngilizce Toast Bildirimi tetikle
                 const toast = document.getElementById('resumeToast');
                 toast.classList.add('show');
                 setTimeout(() => { toast.classList.remove('show'); }, 4000);
