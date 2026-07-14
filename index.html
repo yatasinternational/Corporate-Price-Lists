@@ -21,10 +21,40 @@
             perspective: 2000px;
         }
         
+        /* YATAŞ KURUMSAL LACİVERT KALP ATIŞI LOADING EKRANI */
         #globalLoading { 
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: #070d22; z-index: 10000; display: flex; 
-            justify-content: center; align-items: center; font-size: 18px; letter-spacing: 1px;
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100vw; 
+            height: 100vh;
+            background: #002870; 
+            z-index: 10000; 
+            display: flex; 
+            flex-direction: column;
+            justify-content: center; 
+            align-items: center; 
+            gap: 20px;
+        }
+
+        /* Ritmik Kalp Atışı Yapan Beyaz Logo Kutusu */
+        .loading-pulse-logo {
+            width: 180px;
+            height: auto;
+            background: #ffffff;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            animation: yatasHeartbeat 1.4s ease-in-out infinite;
+        }
+
+        @keyframes yatasHeartbeat {
+            0% { transform: scale(1); }
+            14% { transform: scale(1.08); }
+            28% { transform: scale(1); }
+            42% { transform: scale(1.13); }
+            70% { transform: scale(1); }
+            100% { transform: scale(1); }
         }
 
         .portal-wrapper {
@@ -211,7 +241,6 @@
             perspective: 2000px;
         }
         
-        /* 3D SAYFA ÇEVİRME ANİMASYONU */
         .page {
             position: absolute;
             top: 0; left: 0;
@@ -427,7 +456,10 @@
 </head>
 <body>
 
-    <div id="globalLoading">Yataş International Price Catalogues are launching...</div>
+    <!-- YENİ ENTEGRE EDİLEN KALP ATIŞI VE KURUMSAL ARKA PLANLI LOADING EKRANI -->
+    <div id="globalLoading">
+        <img src="image_26c41.png" alt="Yataş Group" class="loading-pulse-logo">
+    </div>
     
     <!-- PREMIUM TOP ACTION BAR -->
     <div class="premium-actions">
@@ -438,7 +470,7 @@
     <!-- AUTO RESUME ENG TOAST -->
     <div id="resumeToast">Welcome back! You're being redirected to your last viewed page.</div>
     
-    <!-- FOCUS MODE AKTİF OLDUĞUNDA GÖZÜKECEK RESMI LOGO (DUZELTILDI) -->
+    <!-- FOCUS MODE AKTİF LOGO -->
     <img id="focusLogo" src="image_26c41.png" alt="Yataş Group Logo">
     
     <div class="portal-wrapper" id="portalWrapper">
@@ -524,7 +556,6 @@
         let isSoundOn = true;
         let pageRenderingStates = {}; 
 
-        // GÖNDERDİĞİN LÜKS MP3 SES DOSYASI INTEGRASYONU
         const transitionSound = new Audio('glossy_magazine.mp3');
 
         const zoomContainer = document.getElementById('zoomContainer');
@@ -536,7 +567,6 @@
         const downloadList = document.getElementById('downloadList');
         const globalLoading = document.getElementById('globalLoading');
 
-        // Tarayıcı ses engelini aşmak için tetikleyici
         function unlockAudio() {
             transitionSound.play().then(() => {
                 transitionSound.pause();
@@ -556,7 +586,6 @@
             } catch (e) { console.log("Audio waiting for user gesture."); }
         }
 
-        // PREMIUM WATERMARK ENGINE
         function injectWatermark(context, width, height) {
             context.save();
             context.font = "bold " + Math.floor(width / 22) + "px 'Segoe UI', Arial, sans-serif";
@@ -569,7 +598,6 @@
             context.restore();
         }
 
-        // FOCUS MODE TETİKLEYİCİ - ULTRA BÜYÜME VE ORTALAMA GARANTİSİ
         document.getElementById('focusModeBtn').addEventListener('click', function() {
             this.classList.toggle('active');
             document.body.classList.toggle('focus-mode-on');
@@ -637,8 +665,10 @@
                 b.classList.toggle('active-deck', bIdx === index);
             });
 
+            // Loading durumunda text yazıp logoyu bozmuyoruz, sadece ekranı açıyoruz
+            const errorMsg = document.getElementById('loadingErrorMsg');
+            if(errorMsg) errorMsg.remove();
             globalLoading.style.display = 'flex';
-            globalLoading.innerText = `Loading "${item.title}"...`;
 
             book.innerHTML = '';
             sidebarThumbnails.innerHTML = '';
@@ -654,7 +684,6 @@
         function resizeBookToFit(viewport) {
             const sceneW = scene.clientWidth;
             const sceneH = scene.clientHeight;
-            // Focus modda sayfa boyutunu ekran sınırlarına kadar büyütüyoruz
             const multiplierW = document.body.classList.contains('focus-mode-on') ? 0.98 : 0.94;
             const multiplierH = document.body.classList.contains('focus-mode-on') ? 0.96 : 0.90;
             
@@ -665,7 +694,6 @@
             book.style.height = Math.floor(viewport.height * idealScale) + 'px';
         }
 
-        // PREDICTIVE LAZY LOADING (+2 / -2)
         async function optimizeAndRenderPage(pageNum) {
             if (pageNum < 1 || pageNum > pdfDoc.numPages) return;
             if (pageRenderingStates[pageNum] === 'high-res') return;
@@ -725,7 +753,6 @@
             }
         }
 
-        // SAĞ ŞERİT SIRALAMA HATASI COZUMU (Sıralı Boş Kutular Oluşturuluyor)
         function createSequentialThumbContainers(total) {
             sidebarThumbnails.innerHTML = '';
             for (let i = 1; i <= total; i++) {
@@ -776,7 +803,6 @@
                 pages = new Array(totalPages);
                 thumbElements = new Array(totalPages);
 
-                // Önce sıralı boş kutuları oluşturup yerleştiriyoruz
                 createSequentialThumbContainers(totalPages);
 
                 const startRenderPage = currentId + 1;
@@ -788,7 +814,6 @@
 
                 runPredictiveCachePipeline();
 
-                // Kutuların içeriğini arka planda asenkron dolduruyoruz (Sıra bozulmaz!)
                 for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
                     renderThumbnail(pageNum).then(() => {
                         if (pageNum - 1 === currentId && thumbElements[currentId]) {
@@ -798,7 +823,16 @@
                 }
             } catch (error) {
                 globalLoading.style.display = 'flex';
-                globalLoading.innerText = "Error loading PDF file. Please check file paths.";
+                let errorMsg = document.getElementById('loadingErrorMsg');
+                if(!errorMsg) {
+                    errorMsg = document.createElement('div');
+                    errorMsg.id = 'loadingErrorMsg';
+                    errorMsg.style.color = '#ff4d4d';
+                    errorMsg.style.fontWeight = 'bold';
+                    errorMsg.style.marginTop = '15px';
+                    globalLoading.appendChild(errorMsg);
+                }
+                errorMsg.innerText = "Error loading PDF file. Please check file paths.";
                 console.error(error);
             }
         }
