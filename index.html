@@ -18,7 +18,7 @@
             font-family: 'Segoe UI', Arial, sans-serif;
             overflow: hidden;
             color: #fff;
-            perspective: 2000px; /* 3D derinlik artırıldı */
+            perspective: 2000px;
         }
         
         #globalLoading { 
@@ -40,11 +40,11 @@
             position: fixed;
             top: 25px;
             left: 30px;
-            width: 120px;
+            width: 130px;
             height: auto;
             z-index: 10002;
             display: none;
-            opacity: 0.7;
+            opacity: 0.85;
             background: #ffffff;
             padding: 8px 12px;
             border-radius: 4px;
@@ -99,29 +99,6 @@
             border-bottom: 1px solid rgba(255,255,255,0.15);
             padding-bottom: 12px;
             flex-shrink: 0;
-        }
-
-        /* SMART SEARCH INPUT */
-        .search-container {
-            position: relative;
-            margin-bottom: 20px;
-            flex-shrink: 0;
-        }
-        .search-input {
-            width: 100%;
-            padding: 12px 15px;
-            background: rgba(0, 0, 0, 0.25);
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 20px;
-            color: #fff;
-            font-size: 12px;
-            outline: none;
-            transition: all 0.3s;
-        }
-        .search-input:focus {
-            background: rgba(0, 0, 0, 0.45);
-            border-color: rgba(255,255,255,0.6);
-            box-shadow: 0 0 10px rgba(255,255,255,0.1);
         }
 
         .menu-section-title {
@@ -184,14 +161,14 @@
             color: #002870;
         }
 
-        /* WORKSPACE (Pürüzsüz Genişleme Özellikli) */
+        /* WORKSPACE */
         .workspace {
             flex: 1;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             align-items: center;
-            padding: 20px 0;
+            padding: 15px 0;
             position: relative;
             background: rgba(7, 13, 34, 0.35);
             transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
@@ -234,7 +211,7 @@
             perspective: 2000px;
         }
         
-        /* 3D SAYFA ÇEVİRME ANİMASYONU REVIZE */
+        /* 3D SAYFA ÇEVİRME ANİMASYONU */
         .page {
             position: absolute;
             top: 0; left: 0;
@@ -277,7 +254,7 @@
             border-radius: 6px;
         }
 
-        /* PREMIUM GEÇİŞ OKLARI */
+        /* GEÇİŞ OKLARI */
         .nav-overlay-zone {
             position: absolute;
             top: 0; height: 100%; width: 120px;
@@ -448,7 +425,7 @@
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
-<body class="">
+<body>
 
     <div id="globalLoading">Yataş International Price Catalogues are launching...</div>
     
@@ -461,7 +438,7 @@
     <!-- AUTO RESUME ENG TOAST -->
     <div id="resumeToast">Welcome back! You're being redirected to your last viewed page.</div>
     
-    <!-- FOCUS MODE AKTİF OLDUĞUNDA GÖZÜKECEK RESMI LOGO -->
+    <!-- FOCUS MODE AKTİF OLDUĞUNDA GÖZÜKECEK RESMI LOGO (DUZELTILDI) -->
     <img id="focusLogo" src="image_26c41.png" alt="Yataş Group Logo">
     
     <div class="portal-wrapper" id="portalWrapper">
@@ -473,11 +450,6 @@
             </div>
             <div class="brand-subtitle">yataş ınternatıonal</div>
             
-            <!-- SMART SEARCH BAR (Çift Yönlü Arama Modülü) -->
-            <div class="search-container">
-                <input type="text" id="smartSearch" class="search-input" placeholder="Search catalogues or page text...">
-            </div>
-
             <!-- 1. CATALOGUES -->
             <div class="menu-section-title">Catalogues</div>
             <ul class="deck-list" id="cataloguesList"></ul>
@@ -564,12 +536,24 @@
         const downloadList = document.getElementById('downloadList');
         const globalLoading = document.getElementById('globalLoading');
 
+        // Tarayıcı ses engelini aşmak için tetikleyici
+        function unlockAudio() {
+            transitionSound.play().then(() => {
+                transitionSound.pause();
+                transitionSound.currentTime = 0;
+            }).catch(e => console.log('Audio init waiting...'));
+            window.removeEventListener('click', unlockAudio);
+            window.removeEventListener('keydown', unlockAudio);
+        }
+        window.addEventListener('click', unlockAudio);
+        window.addEventListener('keydown', unlockAudio);
+
         function playPaperSound() {
             if (!isSoundOn) return;
             try {
                 transitionSound.currentTime = 0;
                 transitionSound.play();
-            } catch (e) { console.log("Audio waiting for interaction."); }
+            } catch (e) { console.log("Audio waiting for user gesture."); }
         }
 
         // PREMIUM WATERMARK ENGINE
@@ -585,44 +569,12 @@
             context.restore();
         }
 
-        // AKILLI SÜZME & PDF İÇİ METİN ARAMA MOTORU
-        document.getElementById('smartSearch').addEventListener('input', async function(e) {
-            const query = e.target.value.toLowerCase().trim();
-            if(!query) return;
-
-            // 1. Aşama: Sol taraftaki katalog listesini süz
-            document.querySelectorAll('.deck-btn').forEach(btn => {
-                const text = btn.innerText.toLowerCase();
-                btn.parentElement.style.display = text.includes(query) ? "block" : "none";
-            });
-
-            // 2. Aşama: PDF aktifse içerideki sayfalarda kelimeyi ara ve ilk eşleşen sayfaya atla
-            if (pdfDoc) {
-                for (let i = 1; i <= pdfDoc.numPages; i++) {
-                    const page = await pdfDoc.getPage(i);
-                    const textContent = await page.getTextContent();
-                    const pageText = textContent.items.map(item => item.str).join(" ").toLowerCase();
-                    
-                    if (pageText.includes(query)) {
-                        playPaperSound();
-                        currentId = i - 1;
-                        localStorage.setItem('yatas_last_page', currentId);
-                        resetZoom();
-                        runPredictiveCachePipeline();
-                        updateBookDisplay();
-                        break; // İlk eşleşen sayfayı bulduğunda aramayı durdurur
-                    }
-                }
-            }
-        });
-
-        // FOCUS MODE TETİKLEYİCİ - TAM BÜYÜME VE ORTALAMA GARANTİSİ
+        // FOCUS MODE TETİKLEYİCİ - ULTRA BÜYÜME VE ORTALAMA GARANTİSİ
         document.getElementById('focusModeBtn').addEventListener('click', function() {
             this.classList.toggle('active');
             document.body.classList.toggle('focus-mode-on');
             this.innerText = document.body.classList.contains('focus-mode-on') ? "✨ Normal Mode" : "✨ Focus Mode";
 
-            // Paneller kapanırken genişliğin tam oturması için geçiş süresi (500ms) sonunda boyutu tekrar hesaplatıyoruz
             setTimeout(() => {
                 if (pages[currentId]) {
                     resetZoom();
@@ -702,8 +654,12 @@
         function resizeBookToFit(viewport) {
             const sceneW = scene.clientWidth;
             const sceneH = scene.clientHeight;
-            const scaleX = (sceneW * 0.94) / viewport.width;
-            const scaleY = (sceneH * 0.90) / viewport.height;
+            // Focus modda sayfa boyutunu ekran sınırlarına kadar büyütüyoruz
+            const multiplierW = document.body.classList.contains('focus-mode-on') ? 0.98 : 0.94;
+            const multiplierH = document.body.classList.contains('focus-mode-on') ? 0.96 : 0.90;
+            
+            const scaleX = (sceneW * multiplierW) / viewport.width;
+            const scaleY = (sceneH * multiplierH) / viewport.height;
             const idealScale = Math.min(scaleX, scaleY);
             book.style.width = Math.floor(viewport.width * idealScale) + 'px';
             book.style.height = Math.floor(viewport.height * idealScale) + 'px';
@@ -769,33 +725,45 @@
             }
         }
 
+        // SAĞ ŞERİT SIRALAMA HATASI COZUMU (Sıralı Boş Kutular Oluşturuluyor)
+        function createSequentialThumbContainers(total) {
+            sidebarThumbnails.innerHTML = '';
+            for (let i = 1; i <= total; i++) {
+                const thumbBox = document.createElement('div');
+                thumbBox.className = 'thumb-box';
+                thumbBox.id = `thumb-box-${i}`;
+                
+                const canvas = document.createElement('canvas');
+                thumbBox.appendChild(canvas);
+
+                const label = document.createElement('div');
+                label.className = 'thumb-label'; label.innerText = i;
+                thumbBox.appendChild(label);
+
+                sidebarThumbnails.appendChild(thumbBox);
+                thumbElements[i - 1] = thumbBox;
+
+                thumbBox.addEventListener('click', () => {
+                    playPaperSound();
+                    currentId = i - 1;
+                    localStorage.setItem('yatas_last_page', currentId);
+                    resetZoom();
+                    updateBookDisplay();
+                });
+            }
+        }
+
         async function renderThumbnail(pageNum) {
             try {
                 const page = await pdfDoc.getPage(pageNum);
                 const viewport = page.getViewport({ scale: 0.30 }); 
 
-                const thumbBox = document.createElement('div');
-                thumbBox.className = 'thumb-box';
-                
-                const canvas = document.createElement('canvas');
+                const thumbBox = document.getElementById(`thumb-box-${pageNum}`);
+                if (!thumbBox) return;
+
+                const canvas = thumbBox.querySelector('canvas');
                 const context = canvas.getContext('2d');
                 canvas.height = viewport.height; canvas.width = viewport.width;
-                thumbBox.appendChild(canvas);
-
-                const label = document.createElement('div');
-                label.className = 'thumb-label'; label.innerText = pageNum;
-                thumbBox.appendChild(label);
-
-                sidebarThumbnails.appendChild(thumbBox);
-                thumbElements[pageNum - 1] = thumbBox;
-
-                thumbBox.addEventListener('click', () => {
-                    playPaperSound();
-                    currentId = pageNum - 1;
-                    localStorage.setItem('yatas_last_page', currentId);
-                    resetZoom();
-                    updateBookDisplay();
-                });
 
                 await page.render({ canvasContext: context, viewport: viewport }).promise;
             } catch (err) { console.error(err); }
@@ -808,6 +776,9 @@
                 pages = new Array(totalPages);
                 thumbElements = new Array(totalPages);
 
+                // Önce sıralı boş kutuları oluşturup yerleştiriyoruz
+                createSequentialThumbContainers(totalPages);
+
                 const startRenderPage = currentId + 1;
                 await optimizeAndRenderPage(startRenderPage);
 
@@ -817,6 +788,7 @@
 
                 runPredictiveCachePipeline();
 
+                // Kutuların içeriğini arka planda asenkron dolduruyoruz (Sıra bozulmaz!)
                 for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
                     renderThumbnail(pageNum).then(() => {
                         if (pageNum - 1 === currentId && thumbElements[currentId]) {
